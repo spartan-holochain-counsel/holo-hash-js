@@ -14,7 +14,7 @@ See [docs/API.md](docs/API.md) for detailed API References
 Turns on debugging logs.
 
 ```javascript
-const { HoloHost, logging } = require('@whi/holo-hash');
+const { HoloHash, logging } = require('@whi/holo-hash');
 
 logging(); // show debug logs
 ```
