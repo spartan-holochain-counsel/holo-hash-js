@@ -1,0 +1,32 @@
+{
+  "name": "@whi/holo-hash",
+  "version": "0.1.0",
+  "description": "A Javascript library for managing Holochain's HoloHash types",
+  "main": "src/index.js",
+  "files": [
+    "README.md",
+    "src/index.js",
+    "src/constants.js",
+    "src/utils.js",
+    "src/errors.js"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Matthew Brisebois <matthew@webheroes.ca>",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mjbrisebois/js-holo-hash/"
+  },
+  "dependencies": {
+    "@whi/xor-digest": "^0.1.0",
+    "base-64": "^1.0.0",
+    "blakejs": "^1.1.0"
+  },
+  "devDependencies": {
+    "@whi/stdlog": "^0.3.4",
+    "chai": "^4.3.4",
+    "mocha": "^9.0.0"
+  }
+}
