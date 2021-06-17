@@ -3,14 +3,17 @@
   "version": "0.1.0",
   "description": "A Javascript library for managing Holochain's HoloHash types",
   "main": "src/index.js",
+  "browser": "dist/holo-hash.bundled.js",
   "files": [
     "README.md",
     "src/index.js",
-    "src/constants.js",
     "src/utils.js",
-    "src/errors.js"
+    "src/constants.js",
+    "src/errors.js",
+    "dist/holo-hash.bundled.js"
   ],
   "scripts": {
+    "build": "webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Matthew Brisebois <matthew@webheroes.ca>",
@@ -27,6 +30,8 @@
   "devDependencies": {
     "@whi/stdlog": "^0.3.4",
     "chai": "^4.3.4",
-    "mocha": "^9.0.0"
+    "mocha": "^9.0.0",
+    "webpack": "^5.39.1",
+    "webpack-cli": "^4.7.2"
   }
 }

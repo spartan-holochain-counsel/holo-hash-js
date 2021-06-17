@@ -251,35 +251,49 @@ class HoloHash extends Uint8Array {
 	return this.constructor;
     }
 }
-set_tostringtag( HoloHash );
+set_tostringtag( HoloHash, "HoloHash" );
 
 
 class AnyDhtHash extends HoloHash {
 }
-set_tostringtag( AnyDhtHash );
+set_tostringtag( AnyDhtHash, "AnyDhtHash" );
 
 
 class AgentPubKey extends AnyDhtHash {
     static PREFIX			= AGENT_PREFIX;
 }
+set_tostringtag( AgentPubKey, "AgentPubKey" );
+
 class EntryHash extends AnyDhtHash {
     static PREFIX			= ENTRY_PREFIX;
 }
+set_tostringtag( EntryHash, "EntryHash" );
+
 class NetIdHash extends HoloHash {
     static PREFIX			= NETID_PREFIX;
 }
+set_tostringtag( NetIdHash, "NetIdHash" );
+
 class DhtOpHash extends HoloHash {
     static PREFIX			= DHTOP_PREFIX;
 }
+set_tostringtag( DhtOpHash, "DhtOpHash" );
+
 class HeaderHash extends AnyDhtHash {
     static PREFIX			= HEADER_PREFIX;
 }
+set_tostringtag( HeaderHash, "HeaderHash" );
+
 class WasmHash extends HoloHash {
     static PREFIX			= WASM_PREFIX;
 }
+set_tostringtag( WasmHash, "WasmHash" );
+
 class DnaHash extends HoloHash {
     static PREFIX			= DNA_PREFIX;
 }
+set_tostringtag( DnaHash, "DnaHash" );
+
 
 const HoloHashTypes			= {
     AgentPubKey,
@@ -290,9 +304,6 @@ const HoloHashTypes			= {
     WasmHash,
     DnaHash,
 };
-Object.values( HoloHashTypes ).map( holo_hash_class => {
-    set_tostringtag( holo_hash_class );
-});
 
 
 let base_exports = {

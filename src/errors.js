@@ -37,25 +37,25 @@ class CustomError extends Error {
 set_tostringtag( CustomError );
 
 class Warning extends CustomError {}
-set_tostringtag( Warning );
+set_tostringtag( Warning, "Warning" );
 
 class HoloHashError extends CustomError {}
-set_tostringtag( HoloHashError );
+set_tostringtag( HoloHashError, "HoloHashError" );
 
 class NoLeadingUError extends HoloHashError {}
-set_tostringtag( NoLeadingUError );
+set_tostringtag( NoLeadingUError, "NoLeadingUError" );
 
 class BadBase64Error extends HoloHashError {}
-set_tostringtag( BadBase64Error );
+set_tostringtag( BadBase64Error, "BadBase64Error" );
 
 class BadSizeError extends HoloHashError {}
-set_tostringtag( BadSizeError );
+set_tostringtag( BadSizeError, "BadSizeError" );
 
 class BadPrefixError extends HoloHashError {}
-set_tostringtag( BadPrefixError );
+set_tostringtag( BadPrefixError, "BadPrefixError" );
 
 class BadChecksumError extends HoloHashError {}
-set_tostringtag( BadChecksumError );
+set_tostringtag( BadChecksumError, "BadChecksumError" );
 
 module.exports = {
     HoloHashError,
