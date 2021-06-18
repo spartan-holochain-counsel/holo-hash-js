@@ -91,11 +91,11 @@ class HoloHash extends Uint8Array {
 	super.set( this.constructor.PREFIX || BLANK_PREFIX );
 
 	if ( typeof input === "string" ) {
-	    if ( input.startsWith('u') ) {
-		input			= input.slice(1);
-	    }
-	    else if ( strict === true )
+	    if ( strict === true && input.length === 52 && input.startsWith('hC') )
 		throw new NoLeadingUError(`Holo Hash missing 'u' prefix: ${input}`);
+
+	    if ( input.length === 53 && input.startsWith('u') )
+		input			= input.slice(1);
 
 	    try {
 		input			= new Uint8Array( urlsafeb64_to_bytes( input ) );
@@ -108,6 +108,8 @@ class HoloHash extends Uint8Array {
 
 	if ( !(input instanceof Uint8Array) )
 	    throw new TypeError(`Invalid HoloHash input: typeof ${typeof input}; expected string or Uint8Array`);
+	else if ( input.constructor.name !== "Uint8Array" )
+	    input			= new Uint8Array(input);
 
 	if ( input instanceof HoloHash ) {
 	    debug && log("Convert instance of HoloHash to Uint8Array bytes: %s", input.constructor.name );

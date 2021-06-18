@@ -107,15 +107,22 @@ function construction_tests () {
 	expect( hash.getHash()		).to.deep.equal( hash_32_bytes );
     });
 
+    it("should create HoloHash instance via url-safe-base64 39-bytes", async () => {
+	let hash			= "hCAkzycGKqICX7BJ11aehXkQ0ebZd9A0m08f-p8c1Pyy4uMlNUQU".toHoloHash( false );
+
+	expect( hash			).to.have.length( 39 );
+	expect( hash.getHash()		).to.deep.equal( hash_32_bytes );
+    });
+
     it("should create HoloHash instance via url-safe-base64 36-bytes", async () => {
-	let hash			= "zycGKqICX7BJ11aehXkQ0ebZd9A0m08f-p8c1Pyy4uMlNUQU".toHoloHash( false );
+	let hash			= "zycGKqICX7BJ11aehXkQ0ebZd9A0m08f-p8c1Pyy4uMlNUQU".toHoloHash();
 
 	expect( hash			).to.have.length( 39 );
 	expect( hash.getHash()		).to.deep.equal( hash_32_bytes );
     });
 
     it("should create HoloHash instance via url-safe-base64 32-bytes", async () => {
-	let hash			= "zycGKqICX7BJ11aehXkQ0ebZd9A0m08f-p8c1Pyy4uM".toHoloHash( false );
+	let hash			= "zycGKqICX7BJ11aehXkQ0ebZd9A0m08f-p8c1Pyy4uM".toHoloHash();
 
 	expect( hash			).to.have.length( 39 );
 	expect( hash.getHash()		).to.deep.equal( hash_32_bytes );
@@ -128,6 +135,14 @@ function construction_tests () {
 	expect( hash			).to.be.an.instanceof( hashlib.AnyDhtHash );
 	expect( hash			).to.be.an.instanceof( AgentPubKey );
 	expect( hash			).to.not.be.an.instanceof( hashlib.EntryHash );
+    });
+
+    it("should create HoloHash instance from 39-byte Buffer", async () => {
+	let hash			= new HoloHash( Buffer.from(hash_39_bytes) );
+
+	expect( hash			).to.have.length( 39 );
+	expect( hash.getHash()		).to.deep.equal( hash_32_bytes );
+	expect( hash			).to.be.an.instanceof( AgentPubKey );
     });
 }
 
