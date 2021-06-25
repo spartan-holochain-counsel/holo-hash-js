@@ -50,6 +50,7 @@ clean-files-all-force:	clean-remove-chaff
 #
 prepare-package:
 	npm run build
+	gzip -kf dist/*.js
 preview-package:	clean-files test prepare-package
 	npm pack --dry-run .
 create-package:		clean-files test prepare-package

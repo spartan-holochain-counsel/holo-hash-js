@@ -237,6 +237,10 @@ class HoloHash extends Uint8Array {
 	return "u" + bytes_to_urlsafeb64( this.bytes() );
     }
 
+    toJSON () {
+	return this.toString();
+    }
+
     toType ( type ) {
 	if ( HoloHashTypes[type] === undefined )
 	    throw new Error(`Invalid HoloHash type (${type}); must be one of: ${Object.keys(HoloHashTypes)}`);

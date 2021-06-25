@@ -1,4 +1,5 @@
 const webpack			= require('webpack');
+const TerserPlugin		= require("terser-webpack-plugin");
 
 module.exports = {
     target: 'node',
@@ -6,6 +7,7 @@ module.exports = {
     entry: [ './src/index.js' ],
     output: {
 	filename: 'holo-hash.bundled.js',
+	globalObject: 'this',
 	library: {
 	    "name": "holohash",
 	    "type": "umd",
@@ -15,4 +17,13 @@ module.exports = {
 	colors: true
     },
     devtool: 'source-map',
+    optimization: {
+	minimizer: [
+	    new TerserPlugin({
+		terserOptions: {
+		    keep_classnames: true,
+		},
+	    }),
+	],
+    },
 };
