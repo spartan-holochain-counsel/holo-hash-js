@@ -91,6 +91,8 @@ class HoloHash extends Uint8Array {
 	super.set( this.constructor.PREFIX || BLANK_PREFIX );
 
 	if ( typeof input === "string" ) {
+	    input			= input.trim();
+
 	    if ( strict === true && input.length === 52 && input.startsWith('hC') )
 		throw new NoLeadingUError(`Holo Hash missing 'u' prefix: ${input}`);
 

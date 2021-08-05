@@ -228,6 +228,10 @@ function errors_tests () {
 	expect(() => {
 	    new HoloHash("hCAkzycGKqICX7BJ11aehXkQ0ebZd9A0m08f-p8c1Pyy4uMlNUQU");
 	}).to.throw(hashlib.NoLeadingUError);
+
+	expect(() => {
+	    new HoloHash("hCAkvBG5BisJxgMvsDayVIuJHQwvCfsr2WoxMGpZ+kEgHu+SJRU1\n");
+	}).to.throw(hashlib.NoLeadingUError);
     });
 
     it("should throw error because invalid base64", async () => {
@@ -245,6 +249,10 @@ function errors_tests () {
     it("should throw error because of invalid byte size", async () => {
 	expect(() => {
 	    new HoloHash("uhCAkzycGKqICX7BJ11aehXkQ0ebZd9A0m08f-p8c1Pyy4uMlNUeUaa");
+	}).to.throw(hashlib.BadSizeError);
+
+	expect(() => {
+	    new HoloHash("uhCAkzycGKqICX7BJ11aehXkQ0ebZd9A0m08f-p8c1Pyy4uMlNUeU\n   aaa");
 	}).to.throw(hashlib.BadSizeError);
     });
 
