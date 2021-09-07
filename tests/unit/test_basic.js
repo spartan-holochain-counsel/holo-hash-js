@@ -252,7 +252,7 @@ function errors_tests () {
 	}).to.throw(hashlib.BadSizeError);
 
 	expect(() => {
-	    new HoloHash("uhCAkzycGKqICX7BJ11aehXkQ0ebZd9A0m08f-p8c1Pyy4uMlNUeU\n   aaa");
+	    new HoloHash("uhCAkzycGKqICX7BJ11aehXkQ0ebZd9A0m08f-p8c1Pyy4uMlNUeUnaaa");
 	}).to.throw(hashlib.BadSizeError);
     });
 

@@ -1,0 +1,24 @@
+<html>
+    <head>
+    </head>
+    <body>
+	<script type="text/javascript" src="../dist/holo-hash.bundled.js"></script>
+
+	<script type="text/javascript">
+	  const {
+	      HoloHash
+	  } = holohash;
+
+	  let hash = new HoloHash("uhCAkzycGKqICX7BJ11aehXkQ0ebZd9A0m08f-p8c1Pyy4uMlNUQU");
+
+	  console.log( hash );
+
+	  console.log("Expect BadBase64Error...");
+	  try {
+	      new HoloHash("uhCAkzycGKqICX7BJ11aehXkQ0ebZd9A0m08f-p8c1Pyy4uMlNUe?");
+	  } catch (err) {
+	      console.error( err );
+	  }
+	</script>
+    </body>
+</html>

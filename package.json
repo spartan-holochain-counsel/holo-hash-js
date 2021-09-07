@@ -7,6 +7,7 @@
   "files": [
     "README.md",
     "src/index.js",
+    "src/blake2b.js",
     "src/utils.js",
     "src/constants.js",
     "src/errors.js",
@@ -23,9 +24,7 @@
     "url": "https://github.com/mjbrisebois/js-holo-hash/"
   },
   "dependencies": {
-    "@whi/xor-digest": "^0.1.0",
-    "base-64": "^1.0.0",
-    "blakejs": "^1.1.0"
+    "@whi/xor-digest": "^0.1.0"
   },
   "devDependencies": {
     "@whi/stdlog": "^0.3.4",

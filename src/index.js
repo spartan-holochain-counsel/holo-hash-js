@@ -1,8 +1,7 @@
 
-const base64				= require('base-64');
-const blake				= require('blakejs');
 const { xor_digest }			= require('@whi/xor-digest');
 
+const blake2b				= require('./blake2b.js');
 const { BLANK_PREFIX,
 	AGENT_PREFIX,
 	ENTRY_PREFIX,
@@ -20,6 +19,9 @@ const {	NoLeadingUError,
 	BadPrefixError,
 	BadChecksumError }		= HoloHashErrorTypes;
 const { set_tostringtag }		= require('./utils.js');
+
+const IS_NODE				= (new Function("try {return this===global;}catch(e){return false;}"))();
+const VALID_B64				= new RegExp("^[A-Za-z0-9+/]+={0,3}$");
 
 let debug				= false;
 
@@ -40,23 +42,23 @@ function b64_url_decode ( b64 ) {
 }
 
 
-function utf8str_to_bytes ( utf8str ) {
-    return utf8str.split('').map(char => char.charCodeAt(0));
-}
-function bytes_to_utf8str ( bytes ) {
-    let str				= "";
-    bytes.map( n => {
-	str			       += String.fromCharCode(n);
-    });
-    return str;
-}
-
-
 function bytes_to_b64 ( bytes ) {
-    return base64.encode( bytes_to_utf8str( bytes )).replace(/=+$/, "");;
+    return (
+	IS_NODE
+	    ? Buffer.from(bytes).toString("base64")
+	    : btoa( String.fromCharCode.apply(null, bytes) )
+    ).replace(/=+$/, "");
 }
 function b64_to_bytes ( b64 ) {
-    return utf8str_to_bytes( base64.decode( b64 ));
+    if ( VALID_B64.test( b64 ) === false )
+	throw new TypeError(`Invalid base64 character(s) in '${b64}'`);
+
+    return IS_NODE
+	? Buffer.from(b64, "base64")
+	: [].reduce.call( atob(b64), (acc, v, i) => {
+	    acc[i] = v.charCodeAt(0);
+	    return acc;
+	}, new Uint8Array(39) );
 }
 
 
@@ -78,7 +80,7 @@ function urlsafeb64_to_bytes ( str ) {
 
 function calculate_dht_address ( bytes ) {
     debug && log("Calculate DHT address from %s bytes", bytes.length );
-    let hash				= blake.blake2b( bytes, null, 16 );
+    let hash				= blake2b( bytes, null, 16 );
     return xor_digest( hash, 4 );
 }
 
@@ -324,6 +326,8 @@ let base_exports = {
     ...HoloHashErrorTypes,
 
     "base64": {
+	"encode": bytes_to_b64,
+	"decode": b64_to_bytes,
 	"url_encode": b64_url_encode,
 	"url_decode": b64_url_decode,
     },
