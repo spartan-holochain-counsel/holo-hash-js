@@ -11,7 +11,10 @@
     "src/utils.js",
     "src/constants.js",
     "src/errors.js",
-    "dist/holo-hash.bundled.js"
+    "dist/holo-hash.js",
+    "dist/holo-hash.js.map",
+    "dist/holo-hash.prod.js",
+    "dist/holo-hash.prod.js.map"
   ],
   "scripts": {
     "build": "webpack",
@@ -29,7 +32,7 @@
   "devDependencies": {
     "@whi/stdlog": "^0.3.4",
     "chai": "^4.3.4",
-    "mocha": "^9.0.0",
+    "mocha": "^9.2.2",
     "webpack": "^5.39.1",
     "webpack-cli": "^4.7.2"
   }
