@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "description": "A Javascript library for managing Holochain's HoloHash types",
   "main": "src/index.js",
-  "browser": "dist/holo-hash.bundled.js",
+  "browser": "dist/holo-hash.prod.js",
   "files": [
     "README.md",
     "src/index.js",
