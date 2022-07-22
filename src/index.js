@@ -7,7 +7,7 @@ const { BLANK_PREFIX,
 	ENTRY_PREFIX,
 	NETID_PREFIX,
 	DHTOP_PREFIX,
-	HEADER_PREFIX,
+	ACTION_PREFIX,
 	WASM_PREFIX,
 	DNA_PREFIX }			= require('./constants.js');
 const { HoloHashError,
@@ -289,15 +289,15 @@ class DhtOpHash extends HoloHash {
 }
 set_tostringtag( DhtOpHash, "DhtOpHash" );
 
-class HeaderHash extends AnyDhtHash {
-    static PREFIX			= HEADER_PREFIX;
+class ActionHash extends AnyDhtHash {
+    static PREFIX			= ACTION_PREFIX;
 }
-set_tostringtag( HeaderHash, "HeaderHash" );
+set_tostringtag( ActionHash, "ActionHash" );
 
-class WasmHash extends HoloHash {
+class DnaWasmHash extends HoloHash {
     static PREFIX			= WASM_PREFIX;
 }
-set_tostringtag( WasmHash, "WasmHash" );
+set_tostringtag( DnaWasmHash, "DnaWasmHash" );
 
 class DnaHash extends HoloHash {
     static PREFIX			= DNA_PREFIX;
@@ -310,8 +310,8 @@ const HoloHashTypes			= {
     EntryHash,
     NetIdHash,
     DhtOpHash,
-    HeaderHash,
-    WasmHash,
+    ActionHash,
+    DnaWasmHash,
     DnaHash,
 };
 

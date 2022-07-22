@@ -14,7 +14,7 @@
     NetIdHash,
     DhtOpHash,
     HeaderHash,
-    WasmHash,
+    DnaWasmHash,
     DnaHash,
 
     // Error classes
@@ -340,7 +340,7 @@ String(entry)
 // "uhCEkzycGKqICX7BJ11aehXkQ0ebZd9A0m08f-p8c1Pyy4uMlNUQU"
 
 hash.toType("Invalid");
-// Error: Invalid HoloHash type (BadClassName); must be one of: AgentPubKey,EntryHash,NetIdHash,DhtOpHash,HeaderHash,WasmHash,DnaHash
+// Error: Invalid HoloHash type (BadClassName); must be one of: AgentPubKey,EntryHash,NetIdHash,DhtOpHash,HeaderHash,DnaWasmHash,DnaHash
 //    at AgentPubKey.toType
 ```
 
