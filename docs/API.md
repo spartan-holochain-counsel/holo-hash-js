@@ -6,6 +6,7 @@
 ```javascript
 {
     HoloHash,
+    HoloHashTypes,
     AnyDhtHash,
 
     // HoloHash types
@@ -18,8 +19,8 @@
     DnaHash,
 
     // Error classes
-    HoloHashError,
     Warning,
+    HoloHashError,
 
     // HoloHashError types,
     NoLeadingUError,
@@ -27,6 +28,11 @@
     BadSizeError,
     BadPrefixError,
     BadChecksumError,
+
+    // Other exports
+    logging,
+    base64,
+    bindNative,
 }
 ```
 
@@ -36,7 +42,9 @@ this can be called on the same line as `require`.
 
 Example
 ```javascript
-const { HoloHash } = require('@whi/holo-hash').bindNative();
+import { HoloHash, bindNative } from '@whi/holo-hash';
+
+bindNative();
 
 let hash = "uhCAkzycGKqICX7BJ11aehXkQ0ebZd9A0m08f-p8c1Pyy4uMlNUQU".toHoloHash();
 ```

@@ -6,6 +6,7 @@ import { expect }			from 'chai';
 
 import {
     HoloHash,
+    HoloHashTypes,
     AnyDhtHash,
 
     AgentPubKey,

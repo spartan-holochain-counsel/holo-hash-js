@@ -352,3 +352,29 @@ export {
     BadPrefixError,
     BadChecksumError,
 };
+
+export default {
+    HoloHash,
+    HoloHashTypes,
+    AnyDhtHash,
+
+    AgentPubKey,
+    EntryHash,
+    NetIdHash,
+    DhtOpHash,
+    ActionHash,
+    DnaWasmHash,
+    DnaHash,
+
+    Warning,
+    HoloHashError,
+    NoLeadingUError,
+    BadBase64Error,
+    BadSizeError,
+    BadPrefixError,
+    BadChecksumError,
+
+    logging,
+    base64,
+    bindNative,
+};
