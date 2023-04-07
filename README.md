@@ -40,7 +40,7 @@ npm i @whi/holo-hash
 ## Basic Usage
 
 ```javascript
-const { HoloHash } = require('@whi/holo-hash');
+import { HoloHash } from '@whi/holo-hash';
 
 new HoloHash("uhCAkzycGKqICX7BJ11aehXkQ0ebZd9A0m08f-p8c1Pyy4uMlNUQU");
 // AgentPubKey(39) [
@@ -55,7 +55,9 @@ new HoloHash("uhCAkzycGKqICX7BJ11aehXkQ0ebZd9A0m08f-p8c1Pyy4uMlNUQU");
 Alternatively, attach a method to the native `String.prototype`.
 
 ```javascript
-require('@whi/holo-hash').bindNative();
+import { bindNative } from '@whi/holo-hash';
+
+bindNative();
 
 "uhCAkzycGKqICX7BJ11aehXkQ0ebZd9A0m08f-p8c1Pyy4uMlNUQU".toHoloHash();
 // AgentPubKey(39) [
