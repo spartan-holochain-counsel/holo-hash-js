@@ -1,32 +1,43 @@
-const webpack			= require('webpack');
-const TerserPlugin		= require("terser-webpack-plugin");
+import webpack			from 'webpack';
+import TerserPlugin		from 'terser-webpack-plugin';
 
-const WEBPACK_MODE		= process.env.WEBPACK_MODE || "production";
-const FILENAME			= process.env.FILENAME || "holo-hash.prod.js";
 
-module.exports = {
-    target: 'node',
-    mode: WEBPACK_MODE,
-    entry: [ './src/index.js' ],
-    output: {
-	filename:	FILENAME,
-	globalObject:	"this",
-	library: {
-	    "name":	"holohash",
-	    "type":	"umd",
+const MODE			= process.env.MODE || "development";
+const FILENAME			= process.env.FILENAME || "holo-hash";
+const FILEEXT			= MODE === "production" ? "min.js" : "js";
+
+
+export default {
+    "target":	"web",
+    "mode":	MODE,
+    "entry": {
+	"main": {
+	    "import":	"./src/index.js",
+	    "filename":	`${FILENAME}.${FILEEXT}`,
+	    "library": {
+		"type":	"module",
+	    },
 	},
     },
-    stats: {
-	colors: true
+    "experiments": {
+	"outputModule":	true,
     },
-    devtool: 'source-map',
-    optimization: {
-	minimizer: [
+    "optimization": {
+	"minimizer": [
 	    new TerserPlugin({
-		terserOptions: {
-		    keep_classnames: true,
+		"terserOptions": {
+		    "keep_classnames": true,
 		},
 	    }),
 	],
     },
+    "devtool":	"source-map",
+    "stats": {
+	"colors": true,
+    },
+    "plugins": [
+        new webpack.optimize.LimitChunkCountPlugin({
+	    "maxChunks": 1,
+	}),
+    ],
 };

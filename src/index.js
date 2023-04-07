@@ -1,24 +1,28 @@
 
-const { xor_digest }			= require('@whi/xor-digest');
+import xordigestlib				from '@whi/xor-digest';
+const { xor_digest }				= xordigestlib;
 
-const blake2b				= require('./blake2b.js');
-const { BLANK_PREFIX,
-	AGENT_PREFIX,
-	ENTRY_PREFIX,
-	NETID_PREFIX,
-	DHTOP_PREFIX,
-	ACTION_PREFIX,
-	WASM_PREFIX,
-	DNA_PREFIX }			= require('./constants.js');
-const { HoloHashError,
-	Warning,
-	...HoloHashErrorTypes }		= require('./errors.js');
-const {	NoLeadingUError,
-	BadBase64Error,
-	BadSizeError,
-	BadPrefixError,
-	BadChecksumError }		= HoloHashErrorTypes;
-const { set_tostringtag }		= require('./utils.js');
+import { blake2b }				from './blake2b.js';
+import {
+    BLANK_PREFIX,
+    AGENT_PREFIX,
+    ENTRY_PREFIX,
+    NETID_PREFIX,
+    DHTOP_PREFIX,
+    ACTION_PREFIX,
+    WASM_PREFIX,
+    DNA_PREFIX,
+}					from './constants.js';
+import {
+    Warning,
+    HoloHashError,
+    NoLeadingUError,
+    BadBase64Error,
+    BadSizeError,
+    BadPrefixError,
+    BadChecksumError,
+}					from './errors.js';
+import { set_tostringtag }		from './utils.js';
 
 const IS_NODE				= (new Function("try {return this===global;}catch(e){return false;}"))();
 const VALID_B64				= new RegExp("^[A-Za-z0-9+/]+={0,3}$");
@@ -85,7 +89,7 @@ function calculate_dht_address ( bytes ) {
 }
 
 
-class HoloHash extends Uint8Array {
+export class HoloHash extends Uint8Array {
     constructor ( input, strict = true ) {
 	debug && log("New construction input (strict: %s): %s", strict, String(input) );
 	super(39);
@@ -264,48 +268,48 @@ class HoloHash extends Uint8Array {
 set_tostringtag( HoloHash, "HoloHash" );
 
 
-class AnyDhtHash extends HoloHash {
+export class AnyDhtHash extends HoloHash {
 }
 set_tostringtag( AnyDhtHash, "AnyDhtHash" );
 
 
-class AgentPubKey extends AnyDhtHash {
+export class AgentPubKey extends AnyDhtHash {
     static PREFIX			= AGENT_PREFIX;
 }
 set_tostringtag( AgentPubKey, "AgentPubKey" );
 
-class EntryHash extends AnyDhtHash {
+export class EntryHash extends AnyDhtHash {
     static PREFIX			= ENTRY_PREFIX;
 }
 set_tostringtag( EntryHash, "EntryHash" );
 
-class NetIdHash extends HoloHash {
+export class NetIdHash extends HoloHash {
     static PREFIX			= NETID_PREFIX;
 }
 set_tostringtag( NetIdHash, "NetIdHash" );
 
-class DhtOpHash extends HoloHash {
+export class DhtOpHash extends HoloHash {
     static PREFIX			= DHTOP_PREFIX;
 }
 set_tostringtag( DhtOpHash, "DhtOpHash" );
 
-class ActionHash extends AnyDhtHash {
+export class ActionHash extends AnyDhtHash {
     static PREFIX			= ACTION_PREFIX;
 }
 set_tostringtag( ActionHash, "ActionHash" );
 
-class DnaWasmHash extends HoloHash {
+export class DnaWasmHash extends HoloHash {
     static PREFIX			= WASM_PREFIX;
 }
 set_tostringtag( DnaWasmHash, "DnaWasmHash" );
 
-class DnaHash extends HoloHash {
+export class DnaHash extends HoloHash {
     static PREFIX			= DNA_PREFIX;
 }
 set_tostringtag( DnaHash, "DnaHash" );
 
 
-const HoloHashTypes			= {
+export const HoloHashTypes		= {
     AgentPubKey,
     EntryHash,
     NetIdHash,
@@ -315,41 +319,36 @@ const HoloHashTypes			= {
     DnaHash,
 };
 
-
-let base_exports = {
-    HoloHash,
-    AnyDhtHash,
-    ...HoloHashTypes,
-
-    HoloHashError,
-    Warning,
-    ...HoloHashErrorTypes,
-
-    "base64": {
-	"encode": bytes_to_b64,
-	"decode": b64_to_bytes,
-	"url_encode": b64_url_encode,
-	"url_decode": b64_url_decode,
-    },
-    logging () {
-	debug				= true;
-    },
+export const base64			= {
+    "encode": bytes_to_b64,
+    "decode": b64_to_bytes,
+    "url_encode": b64_url_encode,
+    "url_decode": b64_url_decode,
 };
 
-module.exports = {
-    bindNative() {
-	if ( String.prototype.toHoloHash !== undefined )
-	    throw new Error(`String.toHoloHash is already defined as type: ${typeof String.toHoloHash}`);
+export function bindNative() {
+    if ( String.prototype.toHoloHash !== undefined )
+	throw new Error(`String.toHoloHash is already defined as type: ${typeof String.toHoloHash}`);
 
-	Object.defineProperty(String.prototype, "toHoloHash", {
-	    "value": function ( strict ) {
-		return new HoloHash(String(this), strict);
-	    },
-	    "enumerable": false,
-	    "writable": false,
-	});
+    Object.defineProperty(String.prototype, "toHoloHash", {
+	"value": function ( strict ) {
+	    return new HoloHash(String(this), strict);
+	},
+	"enumerable": false,
+	"writable": false,
+    });
+}
 
-	return base_exports;
-    },
-    ...base_exports
+export function logging () {
+    debug				= true;
+}
+
+export {
+    Warning,
+    HoloHashError,
+    NoLeadingUError,
+    BadBase64Error,
+    BadSizeError,
+    BadPrefixError,
+    BadChecksumError,
 };

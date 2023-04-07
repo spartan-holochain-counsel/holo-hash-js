@@ -2,23 +2,21 @@
     <head>
     </head>
     <body>
-	<script type="text/javascript" src="../dist/holo-hash.prod.js"></script>
+	<script type="module">
+	    import { HoloHash } from '../dist/holo-hash.js';
 
-	<script type="text/javascript">
-	  const {
-	      HoloHash
-	  } = holohash;
+	    window.HoloHash		= HoloHash;
 
-	  let hash = new HoloHash("uhCAkzycGKqICX7BJ11aehXkQ0ebZd9A0m08f-p8c1Pyy4uMlNUQU");
+	    let hash = new HoloHash("uhCAkzycGKqICX7BJ11aehXkQ0ebZd9A0m08f-p8c1Pyy4uMlNUQU");
 
-	  console.log( hash );
+	    console.log( hash );
 
-	  console.log("Expect BadBase64Error...");
-	  try {
-	      new HoloHash("uhCAkzycGKqICX7BJ11aehXkQ0ebZd9A0m08f-p8c1Pyy4uMlNUe?");
-	  } catch (err) {
-	      console.error( err );
-	  }
+	    console.log("Expect BadBase64Error...");
+	    try {
+	        new HoloHash("uhCAkzycGKqICX7BJ11aehXkQ0ebZd9A0m08f-p8c1Pyy4uMlNUe?");
+	    } catch (err) {
+	        console.error( err );
+	    }
 	</script>
     </body>
 </html>

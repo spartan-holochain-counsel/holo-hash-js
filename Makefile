@@ -13,21 +13,23 @@ build:			node_modules
 #
 # Testing
 #
-test:			build test-setup
+test:			build
 	npx mocha --recursive ./tests
-test-debug:		build test-setup
-	LOG_LEVEL=silly npx mocha --recursive ./tests
+test-debug:		build
+	LOG_LEVEL=trace npx mocha --recursive ./tests
 
-test-unit:		build test-setup
+test-unit:		build
 	npx mocha ./tests/unit
-test-unit-debug:	build test-setup
-	LOG_LEVEL=silly npx mocha ./tests/unit
+test-unit-debug:	build
+	LOG_LEVEL=trace npx mocha ./tests/unit
 
-test-integration:	build test-setup
+test-integration:	build
 	npx mocha ./tests/integration
-test-integration-debug:	build test-setup
-	LOG_LEVEL=silly npx mocha ./tests/integration
-test-setup:
+test-integration-debug:	build
+	LOG_LEVEL=trace npx mocha ./tests/integration
+
+test-server:
+	python3 -m http.server 8765
 
 
 #
@@ -49,8 +51,9 @@ clean-files-all-force:	clean-remove-chaff
 # NPM packaging
 #
 prepare-package:
-	FILENAME=holo-hash.js WEBPACK_MODE=development npm run build
-	npm run build
+	rm -f dist/*
+	npx webpack
+	MODE=production npx webpack
 	gzip -kf dist/*.js
 preview-package:	clean-files test prepare-package
 	npm pack --dry-run .

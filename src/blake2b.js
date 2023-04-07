@@ -192,7 +192,7 @@ function blake2bFinal (ctx) {
     return out;
 }
 
-function blake2b (input, key, outlen) {
+export function blake2b (input, key, outlen) {
     outlen = outlen || 64;
 
     if ( Array.isArray(input) )
@@ -204,5 +204,3 @@ function blake2b (input, key, outlen) {
     blake2bUpdate(ctx, input);
     return blake2bFinal(ctx);
 }
-
-module.exports = blake2b;

@@ -1,15 +1,38 @@
-const path				= require('path');
-const log				= require('@whi/stdlog')(path.basename( __filename ), {
-    level: process.env.LOG_LEVEL || 'fatal',
-});
+import { Logger }			from '@whi/weblogger';
+const log				= new Logger("test-unit", process.env.LOG_LEVEL );
 
-const expect				= require('chai').expect;
-const { HoloHash,
-	AgentPubKey,
-	...hashlib }			= require('../../src/index.js').bindNative();
+
+import { expect }			from 'chai';
+
+import {
+    HoloHash,
+    AnyDhtHash,
+
+    AgentPubKey,
+    EntryHash,
+    NetIdHash,
+    DhtOpHash,
+    ActionHash,
+    DnaWasmHash,
+    DnaHash,
+
+    Warning,
+    HoloHashError,
+    NoLeadingUError,
+    BadBase64Error,
+    BadSizeError,
+    BadPrefixError,
+    BadChecksumError,
+
+    logging,
+    base64,
+    bindNative,
+}					from '../../src/index.js';
+
+bindNative();
 
 if ( process.env.LOG_LEVEL )
-    hashlib.logging();
+    logging();
 
 let entryhash_39_bytes			= new Uint8Array([
     132,  33,  36, 130, 116, 237, 150,  68,
@@ -39,11 +62,11 @@ let hash_39_bytes			= new Uint8Array(
 function construction_tests () {
     it("should URL encode/decode base64 hash", async () => {
 	let input			= "uhCAkzycGKqIC-7BJ11aehXkQ0ebZd9_0m08f-p8c1Pyy4uMlNUQ_";
-	let hash			= hashlib.base64.url_decode( input );
+	let hash			= base64.url_decode( input );
 
 	expect( hash			).to.equal("uhCAkzycGKqIC+7BJ11aehXkQ0ebZd9/0m08f+p8c1Pyy4uMlNUQ/");
 
-	let url_safe_hash		= hashlib.base64.url_encode( hash );
+	let url_safe_hash		= base64.url_encode( hash );
 
 	expect( url_safe_hash		).to.equal( input );
     });
@@ -132,9 +155,9 @@ function construction_tests () {
 	let hash			= "uhCAkzycGKqICX7BJ11aehXkQ0ebZd9A0m08f-p8c1Pyy4uMlNUQU".toHoloHash();
 
 	expect( hash			).to.be.an.instanceof( HoloHash );
-	expect( hash			).to.be.an.instanceof( hashlib.AnyDhtHash );
+	expect( hash			).to.be.an.instanceof( AnyDhtHash );
 	expect( hash			).to.be.an.instanceof( AgentPubKey );
-	expect( hash			).to.not.be.an.instanceof( hashlib.EntryHash );
+	expect( hash			).to.not.be.an.instanceof( EntryHash );
     });
 
     it("should create HoloHash instance from 39-byte Buffer", async () => {
@@ -160,7 +183,7 @@ function api_tests () {
 	let hash			= hash_str.toHoloHash();
 
 	expect( hash.getHash()		).to.deep.equal( entryhash_39_bytes.slice(3,-4) );
-	expect( () => hash.getHashB64()	).to.throw( hashlib.Warning );
+	expect( () => hash.getHashB64()	).to.throw( Warning );
 	expect( hash.getHashB64( true )	).to.not.equal( hash_str.slice(5,-5) );
 	expect( hash.getHashB64( true )	).to.equal("gnTtlkRIdIBT3eaOZmf0mIJEKCQ9crFRfZPwUyWC35M");
     });
@@ -169,7 +192,7 @@ function api_tests () {
 	let hash			= "uhCAkzycGKqICX7BJ11aehXkQ0ebZd9A0m08f-p8c1Pyy4uMlNUQU".toHoloHash();
 
 	expect( hash.getDHTAddress()		).to.deep.equal( hash_36_bytes.slice(-4) );
-	expect( () => hash.getDHTAddressB64()	).to.throw( hashlib.Warning );
+	expect( () => hash.getDHTAddressB64()	).to.throw( Warning );
 	expect( hash.getDHTAddressB64( true )	).to.equal("JTVEFA");
     });
 
@@ -190,7 +213,7 @@ function api_tests () {
 	let hash			= new HoloHash("uhC--zycGKqICX7BJ11aehXkQ0ebZd9A0m08f-p8c1Pyy4uMlNUQU");
 	let agent			= hash.toType("EntryHash");
 
-	expect( agent			).to.be.an.instanceof( hashlib.EntryHash );
+	expect( agent			).to.be.an.instanceof( EntryHash );
 	expect( agent			).to.be.an( "EntryHash" );
     });
 
@@ -198,7 +221,7 @@ function api_tests () {
 	let hash			= new AgentPubKey("uhCAkzycGKqICX7BJ11aehXkQ0ebZd9A0m08f-p8c1Pyy4uMlNUQU");
 	let entry			= hash.toType("EntryHash");
 
-	expect( entry			).to.be.an.instanceof( hashlib.EntryHash );
+	expect( entry			).to.be.an.instanceof( EntryHash );
 	expect( entry			).to.be.an( "EntryHash" );
     });
 
@@ -227,45 +250,45 @@ function errors_tests () {
     it("should throw error because string input is missing 'u' prefix", async () => {
 	expect(() => {
 	    new HoloHash("hCAkzycGKqICX7BJ11aehXkQ0ebZd9A0m08f-p8c1Pyy4uMlNUQU");
-	}).to.throw(hashlib.NoLeadingUError);
+	}).to.throw(NoLeadingUError);
 
 	expect(() => {
 	    new HoloHash("hCAkvBG5BisJxgMvsDayVIuJHQwvCfsr2WoxMGpZ+kEgHu+SJRU1\n");
-	}).to.throw(hashlib.NoLeadingUError);
+	}).to.throw(NoLeadingUError);
     });
 
     it("should throw error because invalid base64", async () => {
 	expect(() => {
 	    new HoloHash("uhCAkzycGKqICX7BJ11aehXkQ0ebZd9A0m08f-p8c1Pyy4uMlNUe?");
-	}).to.throw(hashlib.BadBase64Error);
+	}).to.throw(BadBase64Error);
     });
 
     it("should throw error because invalid prefix", async () => {
 	expect(() => {
 	    new HoloHash("uhC__zycGKqICX7BJ11aehXkQ0ebZd9A0m08f-p8c1Pyy4uMlNUeU");
-	}).to.throw(hashlib.BadPrefixError);
+	}).to.throw(BadPrefixError);
     });
 
     it("should throw error because of invalid byte size", async () => {
 	expect(() => {
 	    new HoloHash("uhCAkzycGKqICX7BJ11aehXkQ0ebZd9A0m08f-p8c1Pyy4uMlNUeUaa");
-	}).to.throw(hashlib.BadSizeError);
+	}).to.throw(BadSizeError);
 
 	expect(() => {
 	    new HoloHash("uhCAkzycGKqICX7BJ11aehXkQ0ebZd9A0m08f-p8c1Pyy4uMlNUeUnaaa");
-	}).to.throw(hashlib.BadSizeError);
+	}).to.throw(BadSizeError);
     });
 
     it("should throw error because DHT address doesn't match", async () => {
 	expect(() => {
 	    new HoloHash("uhCAkzycGKqICX7BJ11aehXkQ0ebZd9A0m08f-p8c1Pyy4uMlNUeU");
-	}).to.throw(hashlib.BadChecksumError);
+	}).to.throw(BadChecksumError);
     });
 
     it("should not throw error because strict mode is off", async () => {
 	expect(() => {
 	    new HoloHash("uhCAkzycGKqICX7BJ11aehXkQ0ebZd9A0m08f-p8c1Pyy4uMlNUeU", false);
-	}).to.not.throw(hashlib.BadChecksumError);
+	}).to.not.throw(BadChecksumError);
     });
 
     it("should throw because of invalid input", async () => {

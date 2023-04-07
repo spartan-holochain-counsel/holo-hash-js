@@ -1,7 +1,7 @@
 
-const { set_tostringtag }		= require('./utils.js');
+import { set_tostringtag }		from './utils.js';
 
-class CustomError extends Error {
+export class CustomError extends Error {
     static [Symbol.toPrimitive] ( hint ) {
 	return hint === "number" ? null : `[${this.name} {}]`;
     }
@@ -36,34 +36,23 @@ class CustomError extends Error {
 }
 set_tostringtag( CustomError );
 
-class Warning extends CustomError {}
+export class Warning extends CustomError {}
 set_tostringtag( Warning, "Warning" );
 
-class HoloHashError extends CustomError {}
+export class HoloHashError extends CustomError {}
 set_tostringtag( HoloHashError, "HoloHashError" );
 
-class NoLeadingUError extends HoloHashError {}
+export class NoLeadingUError extends HoloHashError {}
 set_tostringtag( NoLeadingUError, "NoLeadingUError" );
 
-class BadBase64Error extends HoloHashError {}
+export class BadBase64Error extends HoloHashError {}
 set_tostringtag( BadBase64Error, "BadBase64Error" );
 
-class BadSizeError extends HoloHashError {}
+export class BadSizeError extends HoloHashError {}
 set_tostringtag( BadSizeError, "BadSizeError" );
 
-class BadPrefixError extends HoloHashError {}
+export class BadPrefixError extends HoloHashError {}
 set_tostringtag( BadPrefixError, "BadPrefixError" );
 
-class BadChecksumError extends HoloHashError {}
+export class BadChecksumError extends HoloHashError {}
 set_tostringtag( BadChecksumError, "BadChecksumError" );
-
-module.exports = {
-    HoloHashError,
-    Warning,
-
-    NoLeadingUError,
-    BadBase64Error,
-    BadSizeError,
-    BadPrefixError,
-    BadChecksumError,
-};
