@@ -19,6 +19,9 @@ export default {
 	    },
 	},
     },
+    "resolve": {
+	"mainFields": [ "module", "browser", "main" ],
+    },
     "experiments": {
 	"outputModule":	true,
     },

@@ -4,7 +4,8 @@
   "description": "A Javascript library for managing Holochain's HoloHash types",
   "type": "module",
   "main": "src/index.js",
-  "browser": "dist/holo-hash.min.js",
+  "module": "src/index.js",
+  "browser": "dist/holo-hash.js",
   "files": [
     "README.md",
     "src/index.js",
@@ -12,10 +13,7 @@
     "src/utils.js",
     "src/constants.js",
     "src/errors.js",
-    "dist/holo-hash.js",
-    "dist/holo-hash.js.map",
-    "dist/holo-hash.min.js",
-    "dist/holo-hash.min.js.map"
+    "dist/**"
   ],
   "scripts": {
     "build": "webpack",
