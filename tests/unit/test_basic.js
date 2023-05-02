@@ -8,14 +8,16 @@ import {
     HoloHash,
     HoloHashTypes,
     AnyDhtHash,
+    AnyLinkableHash,
 
     AgentPubKey,
     EntryHash,
     NetIdHash,
     DhtOpHash,
     ActionHash,
-    DnaWasmHash,
+    WasmHash,
     DnaHash,
+    ExternalHash,
 
     Warning,
     HoloHashError,
@@ -157,6 +159,7 @@ function construction_tests () {
 
 	expect( hash			).to.be.an.instanceof( HoloHash );
 	expect( hash			).to.be.an.instanceof( AnyDhtHash );
+	expect( hash			).to.be.an.instanceof( AnyLinkableHash );
 	expect( hash			).to.be.an.instanceof( AgentPubKey );
 	expect( hash			).to.not.be.an.instanceof( EntryHash );
     });
@@ -167,6 +170,16 @@ function construction_tests () {
 	expect( hash			).to.have.length( 39 );
 	expect( hash.getHash()		).to.deep.equal( hash_32_bytes );
 	expect( hash			).to.be.an.instanceof( AgentPubKey );
+    });
+
+    it("should create ExternalHash", async () => {
+	let input			= "uhC8kzycGKqICX7BJ11aehXkQ0ebZd9A0m08f-p8c1Pyy4uMlNUQU";
+	let hash			= new HoloHash( input );
+
+	expect( hash			).to.be.an.instanceof( ExternalHash );
+	expect( hash			).to.be.an.instanceof( AnyLinkableHash );
+	expect( hash			).to.not.be.an.instanceof( AnyDhtHash );
+	expect( hash.getHash()		).to.deep.equal( hash_32_bytes );
     });
 }
 

@@ -7,3 +7,4 @@ export const DHTOP_PREFIX	= Object.freeze([132, 36, 36]); // hCQk
 export const ACTION_PREFIX	= Object.freeze([132, 41, 36]); // hCkk
 export const WASM_PREFIX	= Object.freeze([132, 42, 36]); // hCok
 export const DNA_PREFIX		= Object.freeze([132, 45, 36]); // hC0k
+export const EXTERNAL_PREFIX	= Object.freeze([132, 47, 36]); // hC8k

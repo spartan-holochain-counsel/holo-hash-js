@@ -12,6 +12,7 @@ import {
     ACTION_PREFIX,
     WASM_PREFIX,
     DNA_PREFIX,
+    EXTERNAL_PREFIX,
 }					from './constants.js';
 import {
     Warning,
@@ -268,10 +269,21 @@ export class HoloHash extends Uint8Array {
 set_tostringtag( HoloHash, "HoloHash" );
 
 
-export class AnyDhtHash extends HoloHash {
+
+export class AnyLinkableHash extends HoloHash {
+}
+set_tostringtag( AnyLinkableHash, "AnyLinkableHash" );
+
+export class AnyDhtHash extends AnyLinkableHash {
 }
 set_tostringtag( AnyDhtHash, "AnyDhtHash" );
 
+
+
+export class ExternalHash extends AnyLinkableHash {
+    static PREFIX			= EXTERNAL_PREFIX;
+}
+set_tostringtag( ExternalHash, "ExternalHash" );
 
 export class AgentPubKey extends AnyDhtHash {
     static PREFIX			= AGENT_PREFIX;
@@ -298,10 +310,10 @@ export class ActionHash extends AnyDhtHash {
 }
 set_tostringtag( ActionHash, "ActionHash" );
 
-export class DnaWasmHash extends HoloHash {
+export class WasmHash extends HoloHash {
     static PREFIX			= WASM_PREFIX;
 }
-set_tostringtag( DnaWasmHash, "DnaWasmHash" );
+set_tostringtag( WasmHash, "WasmHash" );
 
 export class DnaHash extends HoloHash {
     static PREFIX			= DNA_PREFIX;
@@ -315,8 +327,9 @@ export const HoloHashTypes		= {
     NetIdHash,
     DhtOpHash,
     ActionHash,
-    DnaWasmHash,
+    WasmHash,
     DnaHash,
+    ExternalHash,
 };
 
 export const base64			= {
@@ -357,14 +370,16 @@ export default {
     HoloHash,
     HoloHashTypes,
     AnyDhtHash,
+    AnyLinkableHash,
 
     AgentPubKey,
     EntryHash,
     NetIdHash,
     DhtOpHash,
     ActionHash,
-    DnaWasmHash,
+    WasmHash,
     DnaHash,
+    ExternalHash,
 
     Warning,
     HoloHashError,
