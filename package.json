@@ -1,6 +1,6 @@
 {
   "name": "@whi/holo-hash",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "A Javascript library for managing Holochain's HoloHash types",
   "type": "module",
   "main": "src/index.js",
