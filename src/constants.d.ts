@@ -1,0 +1,9 @@
+export const BLANK_PREFIX: readonly number[];
+export const AGENT_PREFIX: readonly number[];
+export const ENTRY_PREFIX: readonly number[];
+export const NETID_PREFIX: readonly number[];
+export const DHTOP_PREFIX: readonly number[];
+export const ACTION_PREFIX: readonly number[];
+export const WASM_PREFIX: readonly number[];
+export const DNA_PREFIX: readonly number[];
+export const EXTERNAL_PREFIX: readonly number[];

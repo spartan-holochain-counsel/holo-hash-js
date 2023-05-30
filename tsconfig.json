@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+	"declaration": true,
+	"declarationDir": "src",
+	"skipLibCheck": true,
+	"allowJs": true
+    },
+    "include": [
+	"src"
+    ],
+    "exclude": []
+}

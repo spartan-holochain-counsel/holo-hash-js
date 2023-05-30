@@ -90,7 +90,17 @@ function calculate_dht_address ( bytes ) {
 }
 
 
+/**
+ * @class
+ * @extends Uint8Array
+ * @classdesc Represents a HoloHash.
+ */
 export class HoloHash extends Uint8Array {
+    /**
+     * @constructor
+     * @param {string|Uint8Array} input - The input value.
+     * @param {boolean} [strict=true] - If true, apply strict validation to the input
+     */
     constructor ( input, strict = true ) {
 	debug && log("New construction input (strict: %s): %s", strict, String(input) );
 	super(39);
@@ -181,14 +191,31 @@ export class HoloHash extends Uint8Array {
 	});
     }
 
+    /**
+     * The set method is not allowed for this class.
+     * @method
+     * @throws {Error} - Throws an error indicating not to modify HoloHash bytes manually.
+     */
     set () {
 	throw new Error(`You should not be manually modifying HoloHash bytes`);
     }
 
+    /**
+     * The slice method is not allowed for this class.
+     * @method
+     * @throws {Error} - Throws an error indicating that HoloHash is not intended to be sliced.
+     */
     slice () {
 	throw new Error(`HoloHash is not intended to by sliced; use <HoloHash>.bytes() to get Uint8Array slices`);
     }
 
+    /**
+     * Get a Uint8Array slice from the current instance.
+     * @method
+     * @param {number} [start] - The start index.
+     * @param {number} [end] - The end index.
+     * @returns {Uint8Array} - A new Uint8Array instance.
+     */
     bytes ( start, end ) {
 	let length;
 
@@ -204,18 +231,37 @@ export class HoloHash extends Uint8Array {
 	return new Uint8Array(this.buffer, start, length );
     }
 
+    /**
+     * @method
+     * @returns {Uint8Array} - The prefix bytes.
+     */
     getPrefix () {
 	return this.bytes(0,3);
     }
 
+    /**
+     * Get the base64 representation of the prefix.
+     * @param {boolean} [with_leading_u=true] - Whether to include the leading 'u'.
+     * @returns {string} - The base64 representation of the prefix.
+     */
     getPrefixB64 ( with_leading_u = true ) {
 	return ( with_leading_u === true ? "u" : "" ) + bytes_to_urlsafeb64( this.getPrefix() );
     }
 
+    /**
+     * Get the hash portion of the HoloHash.
+     * @returns {Uint8Array} - The 32 hash bytes.
+     */
     getHash () {
 	return this.bytes(3, -4);
     }
 
+    /**
+     * Gets the base64 representation of the hash.
+     * @param {boolean} force - Whether to force the base64 conversion.
+     * @returns {string} The base64 representation of the hash.
+     * @throws Will throw a warning if force is not true.
+     */
     getHashB64 ( force = false ) {
 	if ( force !== true )
 	    throw new Warning(`A base64 representation of the DHT Address MIGHT not match the base64 from the full hash string.`);
@@ -223,10 +269,20 @@ export class HoloHash extends Uint8Array {
 	return bytes_to_urlsafeb64( this.getHash() );
     }
 
+    /**
+     * Gets the DHT address.
+     * @returns {Uint8Array} The DHT address.
+     */
     getDHTAddress () {
 	return this.bytes(-4);
     }
 
+    /**
+     * Gets the base64 representation of the DHT address.
+     * @param {boolean} force - Whether to force the base64 conversion.
+     * @returns {string} The base64 representation of the DHT address.
+     * @throws Will throw a warning if force is not true.
+     */
     getDHTAddressB64 ( force = false ) {
 	if ( force !== true )
 	    throw new Warning(`A base64 representation of the DHT Address WILL NOT match the base64 from the full hash string.`);
@@ -234,22 +290,44 @@ export class HoloHash extends Uint8Array {
 	return bytes_to_urlsafeb64( this.getDHTAddress() );
     }
 
+    /**
+     * Gets the DHT location.
+     * @returns {number} The DHT location.
+     */
     getDHTLocation () {
 	return this.dht_address.getUint32();
     }
 
+    /**
+     * Converts HoloHash to Uint8Array.
+     * @returns {Uint8Array} The 39 bytes.
+     */
     toBytes () {
 	return this.bytes();
     }
 
+    /**
+     * Converts HoloHash to string.
+     * @returns {string} The string representation of HoloHash.
+     */
     toString () {
 	return "u" + bytes_to_urlsafeb64( this.bytes() );
     }
 
+    /**
+     * Define the representation for JSON conversion.
+     * @returns {string} The string representation.
+     */
     toJSON () {
 	return this.toString();
     }
 
+    /**
+     * Converts HoloHash to a certain type.
+     * @param {string} type - A HoloHash subclass name.
+     * @returns {HoloHash} An instance of the HoloHash subclass.
+     * @throws Will throw an error if type does not match one of the known subclasses.
+     */
     toType ( type ) {
 	if ( HoloHashTypes[type] === undefined )
 	    throw new Error(`Invalid HoloHash type (${type}); must be one of: ${Object.keys(HoloHashTypes)}`);
@@ -258,10 +336,20 @@ export class HoloHash extends Uint8Array {
 	return new HoloHashTypes[type](this.bytes(3));
     }
 
-    retype (...args) {
-	return this.toType(...args);
+    /**
+     * Retypes HoloHash.
+     * @param {string} type - A HoloHash subclass name.
+     * @returns {HoloHash} An instance of the HoloHash subclass.
+     * @throws Will throw an error if type does not match one of the known subclasses.
+     */
+    retype ( type ) {
+	return this.toType( type );
     }
 
+    /**
+     * Gets the type of HoloHash.
+     * @returns {function} The constructor of this instance.
+     */
     hashType () {
 	return this.constructor;
     }
