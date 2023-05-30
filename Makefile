@@ -54,6 +54,7 @@ prepare-package:
 	rm -f dist/*
 	npx webpack
 	MODE=production npx webpack
+	npm run types || true
 	gzip -kf dist/*.js
 preview-package:	clean-files test prepare-package
 	npm pack --dry-run .

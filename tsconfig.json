@@ -1,9 +1,10 @@
 {
     "compilerOptions": {
 	"declaration": true,
-	"declarationDir": "src",
+	"outDir": "dist",
+	"allowJs": true,
 	"skipLibCheck": true,
-	"allowJs": true
+	"emitDeclarationOnly": true
     },
     "include": [
 	"src"
