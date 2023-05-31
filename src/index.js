@@ -307,11 +307,32 @@ export class HoloHash extends Uint8Array {
     }
 
     /**
+     * Assign a tag for debug strings `.toString( true )`
+     * @returns {this} - For chaining support
+     */
+    addTag ( name ) {
+	Object.defineProperty( this, "tag", {
+	    "value": name,
+	    "writable": true,
+	});
+	return this;
+    }
+
+    /**
      * Converts HoloHash to string.
      * @returns {string} The string representation of HoloHash.
      */
-    toString () {
-	return "u" + bytes_to_urlsafeb64( this.bytes() );
+    toString ( debug = false ) {
+	const b64			= "u" + bytes_to_urlsafeb64( this.bytes() );
+
+	if ( debug ) {
+	    let text			= `${b64.slice(0,4)}\u2026${b64.slice(-4)}`;
+	    return this.tag
+		? `${this.constructor.name}( ${this.tag} [${text}] )`
+		: `${this.constructor.name}( ${text} )`;
+	}
+	else
+	    return b64;
     }
 
     /**
