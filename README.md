@@ -1,4 +1,4 @@
-[![](https://img.shields.io/npm/v/@whi/holo-hash/latest?style=flat-square)](http://npmjs.com/package/@whi/holo-hash)
+[![](https://img.shields.io/npm/v/@spartan-hc/holo-hash/latest?style=flat-square)](http://npmjs.com/package/@spartan-hc/holo-hash)
 
 # `new HoloHash( input )`
 A Javascript library for managing Holochain's `HoloHash` types.
@@ -34,13 +34,13 @@ match Javascript's architecture.
 ## Install
 
 ```bash
-npm i @whi/holo-hash
+npm i @spartan-hc/holo-hash
 ```
 
 ## Basic Usage
 
 ```javascript
-import { HoloHash } from '@whi/holo-hash';
+import { HoloHash } from '@spartan-hc/holo-hash';
 
 new HoloHash("uhCAkzycGKqICX7BJ11aehXkQ0ebZd9A0m08f-p8c1Pyy4uMlNUQU");
 // AgentPubKey(39) [
@@ -55,7 +55,7 @@ new HoloHash("uhCAkzycGKqICX7BJ11aehXkQ0ebZd9A0m08f-p8c1Pyy4uMlNUQU");
 Alternatively, attach a method to the native `String.prototype`.
 
 ```javascript
-import { bindNative } from '@whi/holo-hash';
+import { bindNative } from '@spartan-hc/holo-hash';
 
 bindNative();
 

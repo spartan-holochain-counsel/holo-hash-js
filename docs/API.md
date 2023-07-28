@@ -44,7 +44,7 @@ this can be called on the same line as `require`.
 
 Example
 ```javascript
-import { HoloHash, bindNative } from '@whi/holo-hash';
+import { HoloHash, bindNative } from '@spartan-hc/holo-hash';
 
 bindNative();
 
