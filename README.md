@@ -3,9 +3,9 @@
 # `new HoloHash( input )`
 A Javascript library for managing Holochain's `HoloHash` types.
 
-[![](https://img.shields.io/github/issues-raw/mjbrisebois/holo-hash-js?style=flat-square)](https://github.com/mjbrisebois/holo-hash-js/issues)
-[![](https://img.shields.io/github/issues-closed-raw/mjbrisebois/holo-hash-js?style=flat-square)](https://github.com/mjbrisebois/holo-hash-js/issues?q=is%3Aissue+is%3Aclosed)
-[![](https://img.shields.io/github/issues-pr-raw/mjbrisebois/holo-hash-js?style=flat-square)](https://github.com/mjbrisebois/holo-hash-js/pulls)
+[![](https://img.shields.io/github/issues-raw/spartan-holochain-counsel/holo-hash-js?style=flat-square)](https://github.com/spartan-holochain-counsel/holo-hash-js/issues)
+[![](https://img.shields.io/github/issues-closed-raw/spartan-holochain-counsel/holo-hash-js?style=flat-square)](https://github.com/spartan-holochain-counsel/holo-hash-js/issues?q=is%3Aissue+is%3Aclosed)
+[![](https://img.shields.io/github/issues-pr-raw/spartan-holochain-counsel/holo-hash-js?style=flat-square)](https://github.com/spartan-holochain-counsel/holo-hash-js/pulls)
 
 
 ## Overview

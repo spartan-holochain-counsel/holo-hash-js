@@ -25,7 +25,7 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mjbrisebois/holo-hash-js/"
+    "url": "https://github.com/spartan-holochain-counsel/holo-hash-js/"
   },
   "dependencies": {
     "@whi/xor-digest": "^0.1.0"
