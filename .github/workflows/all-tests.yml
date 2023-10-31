@@ -1,0 +1,40 @@
+name: All Tests
+
+on:
+  pull_request:
+    branches:
+      - master
+
+env:
+  NODE_VERSION: 18
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build
+        run: make prepare-package
+
+      - name: Run Tests
+        run: |
+          output=$(make test-debug | tee >(cat >&2))
+          passing=$(echo "$output" | grep -oP '\d+ passing' | grep -oP '\d+' || echo 0)
+          failing=$(echo "$output" | grep -oP '\d+ failing' | grep -oP '\d+' || echo 0)
+          pending=$(echo "$output" | grep -oP '\d+ pending' | grep -oP '\d+' || echo 0)
+          echo "## Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Passed   | Failed   | Pending  |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|----------|----------|" >> $GITHUB_STEP_SUMMARY
+          echo "| $passing | $failing | $pending |" >> $GITHUB_STEP_SUMMARY
