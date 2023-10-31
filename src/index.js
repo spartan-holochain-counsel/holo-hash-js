@@ -24,7 +24,10 @@ import {
     BadPrefixError,
     BadChecksumError,
 }					from './errors.js';
-import { set_tostringtag }		from './utils.js';
+import {
+    set_tostringtag,
+    in_heritage,
+}					from './utils.js';
 
 const IS_NODE				= (new Function("try {return this===global;}catch(e){return false;}"))();
 const VALID_B64				= new RegExp("^[A-Za-z0-9+/]+={0,3}$");
@@ -103,8 +106,10 @@ export class HoloHash extends Uint8Array {
      * @param {boolean} [strict=true] - If true, apply strict validation to the input
      */
     constructor ( input, strict = true ) {
-	if ( input instanceof HoloHash )
+	if ( in_heritage( input, HoloHash.name ) ) {
+	    debug && log("Convert instance of HoloHash to Uint8Array bytes: %s", input.constructor.name );
 	    input			= input.bytes();
+	}
 
 	debug && log("New construction input (strict: %s): %s", strict, String(input) );
 	super(39);
@@ -133,11 +138,6 @@ export class HoloHash extends Uint8Array {
 	    throw new TypeError(`Invalid HoloHash input: typeof ${typeof input}; expected string or Uint8Array`);
 	else if ( input.constructor.name !== "Uint8Array" )
 	    input			= new Uint8Array(input);
-
-	if ( input instanceof HoloHash ) {
-	    debug && log("Convert instance of HoloHash to Uint8Array bytes: %s", input.constructor.name );
-	    input			= input.bytes();
-	}
 
 	let given_dht_addr;
 	if ( input.length === 36 ) {
@@ -404,7 +404,7 @@ export class AnyLinkableHash extends HoloHash {
 
 	// If the original constructor is this class, we will return the specific type instead of this
 	if ( this.constructor.name === AnyLinkableHash.name ) {
-	    if ( input instanceof HoloHash )
+	    if ( in_heritage( input, HoloHash.name ) )
 		input			= input.bytes();
 	    let given_prefix		= input.slice(0,3);
 
@@ -430,7 +430,7 @@ export class AnyDhtHash extends AnyLinkableHash {
 
 	// If the original constructor is this class, we will return the specific type instead of this
 	if ( this.constructor.name === AnyDhtHash.name ) {
-	    if ( input instanceof HoloHash )
+	    if ( in_heritage( input, HoloHash.name ) )
 		input			= input.bytes();
 	    let given_prefix		= input.slice(0,3);
 
