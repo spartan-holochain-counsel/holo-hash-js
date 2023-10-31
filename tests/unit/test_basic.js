@@ -181,6 +181,25 @@ function construction_tests () {
 	expect( hash			).to.not.be.an.instanceof( AnyDhtHash );
 	expect( hash.getHash()		).to.deep.equal( hash_32_bytes );
     });
+
+    it("should create AnyDhtHash from ActionHash bytes", async () => {
+	let bytes			= new ActionHash( hash_32_bytes );
+	let hash			= new AnyDhtHash( bytes );
+
+	expect( hash			).to.be.an.instanceof( HoloHash );
+	expect( hash			).to.be.an.instanceof( AnyDhtHash );
+	expect( hash			).to.be.an.instanceof( AnyLinkableHash );
+	expect( hash			).to.be.an.instanceof( ActionHash );
+    });
+
+    it("should create AnyLinkableHash from EntryHash bytes", async () => {
+	let bytes			= new ExternalHash( hash_32_bytes );
+	let hash			= new AnyLinkableHash( bytes );
+
+	expect( hash			).to.be.an.instanceof( HoloHash );
+	expect( hash			).to.be.an.instanceof( AnyLinkableHash );
+	expect( hash			).to.be.an.instanceof( ExternalHash );
+    });
 }
 
 function api_tests () {
@@ -319,6 +338,22 @@ function errors_tests () {
 	expect(() => {
 	    new HoloHash(invalid_input);
 	}).to.throw(Error, "Invalid HoloHash input");
+    });
+
+    it("should throw because of invalid AnyDhtHash type", async () => {
+	let invalid_input		= new ExternalHash( hash_32_bytes );
+
+	expect(() => {
+	    new AnyDhtHash( invalid_input );
+	}).to.throw(BadPrefixError);
+    });
+
+    it("should throw because of invalid AnyLinkableHash type", async () => {
+	let invalid_input		= new DnaHash( hash_32_bytes );
+
+	expect(() => {
+	    new AnyLinkableHash( invalid_input );
+	}).to.throw(BadPrefixError);
     });
 }
 

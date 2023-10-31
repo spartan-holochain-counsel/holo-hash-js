@@ -1,5 +1,7 @@
 
 export const BLANK_PREFIX	= Object.freeze([132, 47, 190]); // hC--
+export const ENUM_PREFIX	= Object.freeze([132, 47, 255]); // hC//
+
 export const AGENT_PREFIX	= Object.freeze([132, 32, 36]); // hCAk
 export const ENTRY_PREFIX	= Object.freeze([132, 33, 36]); // hCEk
 export const NETID_PREFIX	= Object.freeze([132, 34, 36]); // hCIk

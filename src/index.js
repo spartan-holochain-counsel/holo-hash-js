@@ -5,6 +5,7 @@ const { xor_digest }				= xordigestlib;
 import { blake2b }				from './blake2b.js';
 import {
     BLANK_PREFIX,
+    ENUM_PREFIX,
     AGENT_PREFIX,
     ENTRY_PREFIX,
     NETID_PREFIX,
@@ -102,6 +103,9 @@ export class HoloHash extends Uint8Array {
      * @param {boolean} [strict=true] - If true, apply strict validation to the input
      */
     constructor ( input, strict = true ) {
+	if ( input instanceof HoloHash )
+	    input			= input.bytes();
+
 	debug && log("New construction input (strict: %s): %s", strict, String(input) );
 	super(39);
 
@@ -143,11 +147,18 @@ export class HoloHash extends Uint8Array {
 	else if ( input.length === 39 ) {
 	    let given_prefix		= input.slice(0,3);
 
+	    // If the original constructor has a defined prefix...
 	    if ( String(given_prefix) === String(this.constructor.PREFIX)
 		 || String(BLANK_PREFIX) === String(given_prefix) ) {
 		given_dht_addr		= input.slice(-4);
 		input			= input.slice(3,-4);
 	    }
+	    // If the original constructor is an enum type...
+	    else if ( String(ENUM_PREFIX) === String(this.constructor.PREFIX) ) {
+		given_dht_addr		= input.slice(-4);
+		input			= input.slice(3,-4);
+	    }
+	    // If the original constructor has no defined prefix...
 	    else {
 		debug && log("Check if constructor is agnostic type: %s === %s", this.constructor.name, HoloHash.name );
 		if ( this.constructor.name === HoloHash.name ) {
@@ -157,7 +168,10 @@ export class HoloHash extends Uint8Array {
 		    };
 		}
 
-		throw new BadPrefixError(`Hash prefix did not match any HoloHash types: ${given_prefix}`);
+		const valid_types		= Object.values( HoloHashTypes )
+		      .map( type => `${type.name} (${type.PREFIX})` )
+		      .join(', ');
+		throw new BadPrefixError(`Hash prefix did not match any HoloHash types: ${given_prefix}; valid types are ${valid_types}`);
 	    }
 	}
 
@@ -350,6 +364,9 @@ export class HoloHash extends Uint8Array {
      * @throws Will throw an error if type does not match one of the known subclasses.
      */
     toType ( type ) {
+	if ( typeof type !== "string" ) // Assume 'type' is one of the HoloHash classes
+	    type			= type.name;
+
 	if ( HoloHashTypes[type] === undefined )
 	    throw new Error(`Invalid HoloHash type (${type}); must be one of: ${Object.keys(HoloHashTypes)}`);
 
@@ -380,10 +397,54 @@ set_tostringtag( HoloHash, "HoloHash" );
 
 
 export class AnyLinkableHash extends HoloHash {
+    static PREFIX			= ENUM_PREFIX;
+
+    constructor ( input, strict ) {
+	super( input, strict );
+
+	// If the original constructor is this class, we will return the specific type instead of this
+	if ( this.constructor.name === AnyLinkableHash.name ) {
+	    if ( input instanceof HoloHash )
+		input			= input.bytes();
+	    let given_prefix		= input.slice(0,3);
+
+	    for (let type of Object.values( AnyLinkableHashTypes )) {
+		if ( String(type.PREFIX) === String(given_prefix) )
+		    return new type( input.slice(3), strict );
+	    };
+
+	    const valid_types		= Object.values( AnyLinkableHashTypes )
+		  .map( type => `${type.name} (${type.PREFIX})` )
+		  .join(', ');
+	    throw new BadPrefixError(`Hash prefix did not match any AnyLinkableHash types: ${given_prefix}; valid types are ${valid_types}`);
+	}
+    }
 }
 set_tostringtag( AnyLinkableHash, "AnyLinkableHash" );
 
 export class AnyDhtHash extends AnyLinkableHash {
+    static PREFIX			= ENUM_PREFIX;
+
+    constructor ( input, strict ) {
+	super( input, strict );
+
+	// If the original constructor is this class, we will return the specific type instead of this
+	if ( this.constructor.name === AnyDhtHash.name ) {
+	    if ( input instanceof HoloHash )
+		input			= input.bytes();
+	    let given_prefix		= input.slice(0,3);
+
+	    for (let type of Object.values( AnyDhtHashTypes )) {
+		if ( String(type.PREFIX) === String(given_prefix) )
+		    return new type( input.slice(3), strict );
+	    };
+
+	    const valid_types		= Object.values( AnyDhtHashTypes )
+		  .map( type => `${type.name} (${type.PREFIX})` )
+		  .join(', ');
+	    throw new BadPrefixError(`Hash prefix did not match any AnyDhtHash types: ${given_prefix}; valid types are ${valid_types}`);
+	}
+    }
 }
 set_tostringtag( AnyDhtHash, "AnyDhtHash" );
 
@@ -441,6 +502,19 @@ export const HoloHashTypes		= {
     ExternalHash,
 };
 
+export const AnyLinkableHashTypes	= {
+    AgentPubKey,
+    EntryHash,
+    ActionHash,
+    ExternalHash,
+};
+
+export const AnyDhtHashTypes		= {
+    AgentPubKey,
+    EntryHash,
+    ActionHash,
+};
+
 export const base64			= {
     "encode": bytes_to_b64,
     "decode": b64_to_bytes,
@@ -478,8 +552,12 @@ export {
 export default {
     HoloHash,
     HoloHashTypes,
+
     AnyDhtHash,
+    AnyDhtHashTypes,
+
     AnyLinkableHash,
+    AnyLinkableHashTypes,
 
     AgentPubKey,
     EntryHash,
