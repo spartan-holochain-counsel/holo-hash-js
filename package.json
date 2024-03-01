@@ -1,6 +1,6 @@
 {
   "name": "@spartan-hc/holo-hash",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "description": "A Javascript library for managing Holochain's HoloHash types",
   "type": "module",
   "main": "lib/index.js",
