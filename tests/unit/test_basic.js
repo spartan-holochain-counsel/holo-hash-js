@@ -30,11 +30,11 @@ import {
     logging,
     base64,
     bindNative,
-}					from '../../src/index.js';
+}					from '../../lib/index.js';
 
 bindNative();
 
-if ( process.env.LOG_LEVEL )
+if ( log.level > 2 )
     logging();
 
 let entryhash_39_bytes			= new Uint8Array([

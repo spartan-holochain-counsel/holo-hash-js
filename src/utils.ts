@@ -1,5 +1,5 @@
 
-export function set_tostringtag ( cls, name ) {
+export function set_tostringtag ( cls, name? ) {
     Object.defineProperty( cls, "name", {
 	value: name || cls.name,
     });
@@ -9,17 +9,21 @@ export function set_tostringtag ( cls, name ) {
     });
 }
 
-export function heritage ( target, stop_at = "" ) {
-    if ( typeof target !== "function" ) {
+export function heritage ( input: any, stop_at = "" ) : Array<string> {
+    let target : Function;
+
+    if ( typeof input !== "function" ) {
 	// Empty heritage for primitive types
-	if ( target === null || typeof target !== "object" )
+	if ( input === null || typeof input !== "object" )
 	    return [];
 	else
-	    target			= target.constructor;
+	    target			= input.constructor;
     }
+    else
+	target				= input;
 
     let i				= 0;
-    let class_names			= [];
+    let class_names : Array<string>	= [];
     while ( target.name !== stop_at ) {
 	class_names.unshift( target.name );
 	target				= Object.getPrototypeOf( target );
@@ -32,6 +36,6 @@ export function heritage ( target, stop_at = "" ) {
     return class_names;
 }
 
-export function in_heritage ( target, class_name ) {
+export function in_heritage ( target: any, class_name: string ) {
     return heritage( target ).includes( class_name );
 }

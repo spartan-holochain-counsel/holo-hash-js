@@ -1,8 +1,8 @@
 
-import xordigestlib				from '@whi/xor-digest';
-const { xor_digest }				= xordigestlib;
+import xordigestlib			from '@whi/xor-digest';
+const { xor_digest }			= xordigestlib;
 
-import { blake2b }				from './blake2b.js';
+import { blake2b }			from './blake2b.js';
 import {
     BLANK_PREFIX,
     ENUM_PREFIX,
@@ -94,27 +94,41 @@ function calculate_dht_address ( bytes ) {
 }
 
 
+export type HoloHashInput = string | Uint8Array | HoloHash;
+export type PrefixType = readonly [number, number, number];
+
+
 /**
  * @class
  * @extends Uint8Array
  * @classdesc Represents a HoloHash.
  */
 export class HoloHash extends Uint8Array {
+    static PREFIX		: PrefixType	= BLANK_PREFIX;
+
+    prefix			: DataView;
+    dht_address			: DataView;
+    tag				: string;
+
     /**
      * @constructor
      * @param {string|Uint8Array} input - The input value.
      * @param {boolean} [strict=true] - If true, apply strict validation to the input
      */
-    constructor ( input, strict = true ) {
+    constructor (
+	input:		HoloHashInput,
+	strict:		boolean		= true,
+    ) {
 	if ( in_heritage( input, HoloHash.name ) ) {
 	    debug && log("Convert instance of HoloHash to Uint8Array bytes: %s", input.constructor.name );
-	    input			= input.bytes();
+	    input			= (input as HoloHash).bytes();
 	}
 
 	debug && log("New construction input (strict: %s): %s", strict, String(input) );
 	super(39);
 
-	super.set( this.constructor.PREFIX || BLANK_PREFIX );
+	// @ts-ignore
+	super.set( this.constructor.PREFIX );
 
 	if ( typeof input === "string" ) {
 	    input			= input.trim();
@@ -148,12 +162,14 @@ export class HoloHash extends Uint8Array {
 	    let given_prefix		= input.slice(0,3);
 
 	    // If the original constructor has a defined prefix...
+	    // @ts-ignore
 	    if ( String(given_prefix) === String(this.constructor.PREFIX)
 		 || String(BLANK_PREFIX) === String(given_prefix) ) {
 		given_dht_addr		= input.slice(-4);
 		input			= input.slice(3,-4);
 	    }
 	    // If the original constructor is an enum type...
+	    // @ts-ignore
 	    else if ( String(ENUM_PREFIX) === String(this.constructor.PREFIX) ) {
 		given_dht_addr		= input.slice(-4);
 		input			= input.slice(3,-4);
@@ -219,7 +235,7 @@ export class HoloHash extends Uint8Array {
      * @method
      * @throws {Error} - Throws an error indicating that HoloHash is not intended to be sliced.
      */
-    slice () {
+    slice ( ...args ) : Uint8Array {
 	throw new Error(`HoloHash is not intended to by sliced; use <HoloHash>.bytes() to get Uint8Array slices`);
     }
 
@@ -230,7 +246,7 @@ export class HoloHash extends Uint8Array {
      * @param {number} [end] - The end index.
      * @returns {Uint8Array} - A new Uint8Array instance.
      */
-    bytes ( start, end ) {
+    bytes ( start?, end? ) {
 	let length;
 
 	if ( end !== undefined ) {
@@ -309,7 +325,7 @@ export class HoloHash extends Uint8Array {
      * @returns {number} The DHT location.
      */
     getDHTLocation () {
-	return this.dht_address.getUint32();
+	return this.dht_address.getUint32( 0 );
     }
 
     /**
@@ -399,13 +415,13 @@ set_tostringtag( HoloHash, "HoloHash" );
 export class AnyLinkableHash extends HoloHash {
     static PREFIX			= ENUM_PREFIX;
 
-    constructor ( input, strict ) {
+    constructor ( input: HoloHashInput, strict?: boolean ) {
 	super( input, strict );
 
 	// If the original constructor is this class, we will return the specific type instead of this
 	if ( this.constructor.name === AnyLinkableHash.name ) {
 	    if ( in_heritage( input, HoloHash.name ) )
-		input			= input.bytes();
+		input			= (input as HoloHash).bytes();
 	    let given_prefix		= input.slice(0,3);
 
 	    for (let type of Object.values( AnyLinkableHashTypes )) {
@@ -425,13 +441,13 @@ set_tostringtag( AnyLinkableHash, "AnyLinkableHash" );
 export class AnyDhtHash extends AnyLinkableHash {
     static PREFIX			= ENUM_PREFIX;
 
-    constructor ( input, strict ) {
+    constructor ( input: HoloHashInput, strict?: boolean ) {
 	super( input, strict );
 
 	// If the original constructor is this class, we will return the specific type instead of this
 	if ( this.constructor.name === AnyDhtHash.name ) {
 	    if ( in_heritage( input, HoloHash.name ) )
-		input			= input.bytes();
+		input			= (input as HoloHash).bytes();
 	    let given_prefix		= input.slice(0,3);
 
 	    for (let type of Object.values( AnyDhtHashTypes )) {
@@ -523,8 +539,8 @@ export const base64			= {
 };
 
 export function bindNative() {
-    if ( String.prototype.toHoloHash !== undefined )
-	throw new Error(`String.toHoloHash is already defined as type: ${typeof String.toHoloHash}`);
+    if ( String.prototype.hasOwnProperty( "toHoloHash" ) )
+	throw new Error(`String.toHoloHash is already defined as type: ${typeof (String as any).toHoloHash}`);
 
     Object.defineProperty(String.prototype, "toHoloHash", {
 	"value": function ( strict ) {

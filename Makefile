@@ -1,3 +1,18 @@
+.PHONY:			FORCE
+.PRECIOUS:		iterations/%.js
+
+
+#
+# Building
+#
+build:			lib/index.js
+lib/index.js:		src/*.ts Makefile
+	rm -f lib/*.js
+	npx tsc -t es2022 -m es2022 --moduleResolution node --esModuleInterop	\
+		--strictNullChecks 						\
+		--outDir lib -d --sourceMap src/index.ts
+
+
 #
 # Project
 #
@@ -13,20 +28,15 @@ build:			node_modules
 #
 # Testing
 #
-test:			build
-	npx mocha --recursive ./tests
-test-debug:		build
-	LOG_LEVEL=trace npx mocha --recursive ./tests
+DEBUG_LEVEL	       ?= warn
+TEST_ENV_VARS		= LOG_LEVEL=$(DEBUG_LEVEL)
+MOCHA_OPTS		= -n enable-source-maps
 
-test-unit:		build
-	npx mocha ./tests/unit
-test-unit-debug:	build
-	LOG_LEVEL=trace npx mocha ./tests/unit
+test:
+	make -s test-unit
 
-test-integration:	build
-	npx mocha ./tests/integration
-test-integration-debug:	build
-	LOG_LEVEL=trace npx mocha ./tests/integration
+test-unit:		lib/index.js Makefile
+	$(TEST_ENV_VARS) npx mocha $(MOCHA_OPTS) ./tests/unit
 
 test-server:
 	python3 -m http.server 8765
