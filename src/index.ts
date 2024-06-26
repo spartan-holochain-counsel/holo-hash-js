@@ -1,8 +1,8 @@
 
-import xordigestlib			from '@whi/xor-digest';
-const { xor_digest }			= xordigestlib;
+import xordigestlib                     from '@whi/xor-digest';
+const { xor_digest }                    = xordigestlib;
 
-import { blake2b }			from './blake2b.js';
+import { blake2b }                      from './blake2b.js';
 import {
     BLANK_PREFIX,
     ENUM_PREFIX,
@@ -14,7 +14,7 @@ import {
     WASM_PREFIX,
     DNA_PREFIX,
     EXTERNAL_PREFIX,
-}					from './constants.js';
+}                                       from './constants.js';
 import {
     Warning,
     HoloHashError,
@@ -23,19 +23,19 @@ import {
     BadSizeError,
     BadPrefixError,
     BadChecksumError,
-}					from './errors.js';
+}                                       from './errors.js';
 import {
     set_tostringtag,
     in_heritage,
-}					from './utils.js';
+}                                       from './utils.js';
 
-const IS_NODE				= (new Function("try {return this===global;}catch(e){return false;}"))();
-const VALID_B64				= new RegExp("^[A-Za-z0-9+/]+={0,3}$");
+const IS_NODE                           = (new Function("try {return this===global;}catch(e){return false;}"))();
+const VALID_B64                         = new RegExp("^[A-Za-z0-9+/]+={0,3}$");
 
-let debug				= false;
+let debug                               = false;
 
 function log ( msg, ...args ) {
-    let datetime			= (new Date()).toISOString();
+    let datetime                        = (new Date()).toISOString();
     console.log(`${datetime} [ src/index. ]  INFO: ${msg}`, ...args );
 }
 
@@ -53,21 +53,21 @@ function b64_url_decode ( b64 ) {
 
 function bytes_to_b64 ( bytes ) {
     return (
-	IS_NODE
-	    ? Buffer.from(bytes).toString("base64")
-	    : btoa( String.fromCharCode.apply(null, bytes) )
+        IS_NODE
+            ? Buffer.from(bytes).toString("base64")
+            : btoa( String.fromCharCode.apply(null, bytes) )
     ).replace(/=+$/, "");
 }
 function b64_to_bytes ( b64 ) {
     if ( VALID_B64.test( b64 ) === false )
-	throw new TypeError(`Invalid base64 character(s) in '${b64}'`);
+        throw new TypeError(`Invalid base64 character(s) in '${b64}'`);
 
     return IS_NODE
-	? Buffer.from(b64, "base64")
-	: [].reduce.call( atob(b64), (acc, v, i) => {
-	    acc[i] = v.charCodeAt(0);
-	    return acc;
-	}, new Uint8Array(39) );
+        ? Buffer.from(b64, "base64")
+        : [].reduce.call( atob(b64), (acc, v, i) => {
+            acc[i] = v.charCodeAt(0);
+            return acc;
+        }, new Uint8Array(39) );
 }
 
 
@@ -81,7 +81,7 @@ function urlsafeb64_to_bytes ( str ) {
     debug && log("Decoding URL-safe base64 hash:", str );
 
     if ( str.startsWith('u') )
-	str				= str.slice(1);
+        str                             = str.slice(1);
 
     return b64_to_bytes(  b64_url_decode( str ) );
 }
@@ -89,7 +89,7 @@ function urlsafeb64_to_bytes ( str ) {
 
 function calculate_dht_address ( bytes ) {
     debug && log("Calculate DHT address from %s bytes", bytes.length );
-    let hash				= blake2b( bytes, null, 16 );
+    let hash                            = blake2b( bytes, null, 16 );
     return xor_digest( hash, 4 );
 }
 
@@ -104,11 +104,11 @@ export type PrefixType = readonly [number, number, number];
  * @classdesc Represents a HoloHash.
  */
 export class HoloHash extends Uint8Array {
-    static PREFIX		: PrefixType	= BLANK_PREFIX;
+    static PREFIX               : PrefixType    = BLANK_PREFIX;
 
-    prefix			: DataView;
-    dht_address			: DataView;
-    tag				: string;
+    prefix                      : DataView;
+    dht_address                 : DataView;
+    tag                         : string;
 
     /**
      * @constructor
@@ -116,109 +116,109 @@ export class HoloHash extends Uint8Array {
      * @param {boolean} [strict=true] - If true, apply strict validation to the input
      */
     constructor (
-	input:		HoloHashInput,
-	strict:		boolean		= true,
+        input:          HoloHashInput,
+        strict:         boolean         = true,
     ) {
-	if ( in_heritage( input, HoloHash.name ) ) {
-	    debug && log("Convert instance of HoloHash to Uint8Array bytes: %s", input.constructor.name );
-	    input			= (input as HoloHash).bytes();
-	}
+        if ( in_heritage( input, HoloHash.name ) ) {
+            debug && log("Convert instance of HoloHash to Uint8Array bytes: %s", input.constructor.name );
+            input                       = (input as HoloHash).bytes();
+        }
 
-	debug && log("New construction input (strict: %s): %s", strict, String(input) );
-	super(39);
+        debug && log("New construction input (strict: %s): %s", strict, String(input) );
+        super(39);
 
-	// @ts-ignore
-	super.set( this.constructor.PREFIX );
+        // @ts-ignore
+        super.set( this.constructor.PREFIX );
 
-	if ( typeof input === "string" ) {
-	    input			= input.trim();
+        if ( typeof input === "string" ) {
+            input                       = input.trim();
 
-	    if ( strict === true && input.length === 52 && input.startsWith('hC') )
-		throw new NoLeadingUError(`Holo Hash missing 'u' prefix: ${input}`);
+            if ( strict === true && input.length === 52 && input.startsWith('hC') )
+                throw new NoLeadingUError(`Holo Hash missing 'u' prefix: ${input}`);
 
-	    if ( input.length === 53 && input.startsWith('u') )
-		input			= input.slice(1);
+            if ( input.length === 53 && input.startsWith('u') )
+                input                   = input.slice(1);
 
-	    try {
-		input			= new Uint8Array( urlsafeb64_to_bytes( input ) );
-	    } catch ( err ) {
-		debug && log("Failed to decode base64:", err );
-		throw new BadBase64Error(`Failed to decode base64 input (${input})`);
-	    }
-	    debug && log("Decoded base64 bytes: %s", input.length );
-	}
+            try {
+                input                   = new Uint8Array( urlsafeb64_to_bytes( input ) );
+            } catch ( err ) {
+                debug && log("Failed to decode base64:", err );
+                throw new BadBase64Error(`Failed to decode base64 input (${input})`);
+            }
+            debug && log("Decoded base64 bytes: %s", input.length );
+        }
 
-	if ( !(input instanceof Uint8Array) )
-	    throw new TypeError(`Invalid HoloHash input: typeof ${typeof input}; expected string or Uint8Array`);
-	else if ( input.constructor.name !== "Uint8Array" )
-	    input			= new Uint8Array(input);
+        if ( !(input instanceof Uint8Array) )
+            throw new TypeError(`Invalid HoloHash input: typeof ${typeof input}; expected string or Uint8Array`);
+        else if ( input.constructor.name !== "Uint8Array" )
+            input                       = new Uint8Array(input);
 
-	let given_dht_addr;
-	if ( input.length === 36 ) {
-	    given_dht_addr		= input.slice(-4);
-	    input			= input.slice(0,-4);
-	}
-	else if ( input.length === 39 ) {
-	    let given_prefix		= input.slice(0,3);
+        let given_dht_addr;
+        if ( input.length === 36 ) {
+            given_dht_addr              = input.slice(-4);
+            input                       = input.slice(0,-4);
+        }
+        else if ( input.length === 39 ) {
+            let given_prefix            = input.slice(0,3);
 
-	    // If the original constructor has a defined prefix...
-	    // @ts-ignore
-	    if ( String(given_prefix) === String(this.constructor.PREFIX)
-		 || String(BLANK_PREFIX) === String(given_prefix) ) {
-		given_dht_addr		= input.slice(-4);
-		input			= input.slice(3,-4);
-	    }
-	    // If the original constructor is an enum type...
-	    // @ts-ignore
-	    else if ( String(ENUM_PREFIX) === String(this.constructor.PREFIX) ) {
-		given_dht_addr		= input.slice(-4);
-		input			= input.slice(3,-4);
-	    }
-	    // If the original constructor has no defined prefix...
-	    else {
-		debug && log("Check if constructor is agnostic type: %s === %s", this.constructor.name, HoloHash.name );
-		if ( this.constructor.name === HoloHash.name ) {
-		    for (let type of Object.values( HoloHashTypes )) {
-			if ( String(type.PREFIX) === String(given_prefix) )
-			    return new type(input.slice(3), strict );
-		    };
-		}
+            // If the original constructor has a defined prefix...
+            // @ts-ignore
+            if ( String(given_prefix) === String(this.constructor.PREFIX)
+                 || String(BLANK_PREFIX) === String(given_prefix) ) {
+                given_dht_addr          = input.slice(-4);
+                input                   = input.slice(3,-4);
+            }
+            // If the original constructor is an enum type...
+            // @ts-ignore
+            else if ( String(ENUM_PREFIX) === String(this.constructor.PREFIX) ) {
+                given_dht_addr          = input.slice(-4);
+                input                   = input.slice(3,-4);
+            }
+            // If the original constructor has no defined prefix...
+            else {
+                debug && log("Check if constructor is agnostic type: %s === %s", this.constructor.name, HoloHash.name );
+                if ( this.constructor.name === HoloHash.name ) {
+                    for (let type of Object.values( HoloHashTypes )) {
+                        if ( String(type.PREFIX) === String(given_prefix) )
+                            return new type(input.slice(3), strict );
+                    };
+                }
 
-		const valid_types		= Object.values( HoloHashTypes )
-		      .map( type => `${type.name} (${type.PREFIX})` )
-		      .join(', ');
-		throw new BadPrefixError(`Hash prefix did not match any HoloHash types: ${given_prefix}; valid types are ${valid_types}`);
-	    }
-	}
+                const valid_types               = Object.values( HoloHashTypes )
+                      .map( type => `${type.name} (${type.PREFIX})` )
+                      .join(', ');
+                throw new BadPrefixError(`Hash prefix did not match any HoloHash types: ${given_prefix}; valid types are ${valid_types}`);
+            }
+        }
 
-	if ( input.length !== 32 )
-	    throw new BadSizeError(`Invalid input byte length (${input.length}); expected length 39, 36, or 32`);
+        if ( input.length !== 32 )
+            throw new BadSizeError(`Invalid input byte length (${input.length}); expected length 39, 36, or 32`);
 
-	let dht_addr			= calculate_dht_address( input );
+        let dht_addr                    = calculate_dht_address( input );
 
-	if ( strict === true && given_dht_addr !== undefined ) {
-	    debug && log("Comparing DHT addresses given/calc:", given_dht_addr, dht_addr );
-	    if ( String(given_dht_addr) !== String(dht_addr) )
-		throw new BadChecksumError(`Given DHT address (${given_dht_addr}) does not match calculated address: ${dht_addr}`);
-	}
+        if ( strict === true && given_dht_addr !== undefined ) {
+            debug && log("Comparing DHT addresses given/calc:", given_dht_addr, dht_addr );
+            if ( String(given_dht_addr) !== String(dht_addr) )
+                throw new BadChecksumError(`Given DHT address (${given_dht_addr}) does not match calculated address: ${dht_addr}`);
+        }
 
-	super.set( input, 3 );
-	super.set( dht_addr, 35 );
+        super.set( input, 3 );
+        super.set( dht_addr, 35 );
 
-	Object.defineProperties(this, {
-	    "prefix": {
-		value: new Uint8Array(this.buffer, 0, 3),
-		writable: false,
-		enumerable: false,
-		configurable: false,
-	    },
-	    "dht_address": {
-		value: new DataView(this.buffer, 35),
-		writable: false,
-		enumerable: false,
-		configurable: false,
-	    },
-	});
+        Object.defineProperties(this, {
+            "prefix": {
+                value: new Uint8Array(this.buffer, 0, 3),
+                writable: false,
+                enumerable: false,
+                configurable: false,
+            },
+            "dht_address": {
+                value: new DataView(this.buffer, 35),
+                writable: false,
+                enumerable: false,
+                configurable: false,
+            },
+        });
     }
 
     /**
@@ -227,7 +227,7 @@ export class HoloHash extends Uint8Array {
      * @throws {Error} - Throws an error indicating not to modify HoloHash bytes manually.
      */
     set () {
-	throw new Error(`You should not be manually modifying HoloHash bytes`);
+        throw new Error(`You should not be manually modifying HoloHash bytes`);
     }
 
     /**
@@ -236,7 +236,7 @@ export class HoloHash extends Uint8Array {
      * @throws {Error} - Throws an error indicating that HoloHash is not intended to be sliced.
      */
     slice ( ...args ) : Uint8Array {
-	throw new Error(`HoloHash is not intended to by sliced; use <HoloHash>.bytes() to get Uint8Array slices`);
+        throw new Error(`HoloHash is not intended to by sliced; use <HoloHash>.bytes() to get Uint8Array slices`);
     }
 
     /**
@@ -247,18 +247,18 @@ export class HoloHash extends Uint8Array {
      * @returns {Uint8Array} - A new Uint8Array instance.
      */
     bytes ( start?, end? ) {
-	let length;
+        let length;
 
-	if ( end !== undefined ) {
-	    length			= end < 0
-		? this.buffer.byteLength - start + end
-		: end - start;
-	}
-	if ( start !== undefined && start < 0 ) {
-	    start			= this.buffer.byteLength + start;
-	}
+        if ( end !== undefined ) {
+            length                      = end < 0
+                ? this.buffer.byteLength - start + end
+                : end - start;
+        }
+        if ( start !== undefined && start < 0 ) {
+            start                       = this.buffer.byteLength + start;
+        }
 
-	return new Uint8Array(this.buffer, start, length );
+        return new Uint8Array(this.buffer, start, length );
     }
 
     /**
@@ -266,7 +266,7 @@ export class HoloHash extends Uint8Array {
      * @returns {Uint8Array} - The prefix bytes.
      */
     getPrefix () {
-	return this.bytes(0,3);
+        return this.bytes(0,3);
     }
 
     /**
@@ -275,7 +275,7 @@ export class HoloHash extends Uint8Array {
      * @returns {string} - The base64 representation of the prefix.
      */
     getPrefixB64 ( with_leading_u = true ) {
-	return ( with_leading_u === true ? "u" : "" ) + bytes_to_urlsafeb64( this.getPrefix() );
+        return ( with_leading_u === true ? "u" : "" ) + bytes_to_urlsafeb64( this.getPrefix() );
     }
 
     /**
@@ -283,7 +283,7 @@ export class HoloHash extends Uint8Array {
      * @returns {Uint8Array} - The 32 hash bytes.
      */
     getHash () {
-	return this.bytes(3, -4);
+        return this.bytes(3, -4);
     }
 
     /**
@@ -293,10 +293,10 @@ export class HoloHash extends Uint8Array {
      * @throws Will throw a warning if force is not true.
      */
     getHashB64 ( force = false ) {
-	if ( force !== true )
-	    throw new Warning(`A base64 representation of the DHT Address MIGHT not match the base64 from the full hash string.`);
+        if ( force !== true )
+            throw new Warning(`A base64 representation of the DHT Address MIGHT not match the base64 from the full hash string.`);
 
-	return bytes_to_urlsafeb64( this.getHash() );
+        return bytes_to_urlsafeb64( this.getHash() );
     }
 
     /**
@@ -304,7 +304,7 @@ export class HoloHash extends Uint8Array {
      * @returns {Uint8Array} The DHT address.
      */
     getDHTAddress () {
-	return this.bytes(-4);
+        return this.bytes(-4);
     }
 
     /**
@@ -314,10 +314,10 @@ export class HoloHash extends Uint8Array {
      * @throws Will throw a warning if force is not true.
      */
     getDHTAddressB64 ( force = false ) {
-	if ( force !== true )
-	    throw new Warning(`A base64 representation of the DHT Address WILL NOT match the base64 from the full hash string.`);
+        if ( force !== true )
+            throw new Warning(`A base64 representation of the DHT Address WILL NOT match the base64 from the full hash string.`);
 
-	return bytes_to_urlsafeb64( this.getDHTAddress() );
+        return bytes_to_urlsafeb64( this.getDHTAddress() );
     }
 
     /**
@@ -325,7 +325,7 @@ export class HoloHash extends Uint8Array {
      * @returns {number} The DHT location.
      */
     getDHTLocation () {
-	return this.dht_address.getUint32( 0 );
+        return this.dht_address.getUint32( 0 );
     }
 
     /**
@@ -333,7 +333,7 @@ export class HoloHash extends Uint8Array {
      * @returns {Uint8Array} The 39 bytes.
      */
     toBytes () {
-	return this.bytes();
+        return this.bytes();
     }
 
     /**
@@ -341,11 +341,11 @@ export class HoloHash extends Uint8Array {
      * @returns {this} - For chaining support
      */
     addTag ( name ) {
-	Object.defineProperty( this, "tag", {
-	    "value": name,
-	    "writable": true,
-	});
-	return this;
+        Object.defineProperty( this, "tag", {
+            "value": name,
+            "writable": true,
+        });
+        return this;
     }
 
     /**
@@ -353,16 +353,16 @@ export class HoloHash extends Uint8Array {
      * @returns {string} The string representation of HoloHash.
      */
     toString ( debug = false ) {
-	const b64			= "u" + bytes_to_urlsafeb64( this.bytes() );
+        const b64                       = "u" + bytes_to_urlsafeb64( this.bytes() );
 
-	if ( debug ) {
-	    let text			= `${b64.slice(0,4)}\u2026${b64.slice(-4)}`;
-	    return this.tag
-		? `${this.constructor.name}( ${this.tag} [${text}] )`
-		: `${this.constructor.name}( ${text} )`;
-	}
-	else
-	    return b64;
+        if ( debug ) {
+            let text                    = `${b64.slice(0,4)}\u2026${b64.slice(-4)}`;
+            return this.tag
+                ? `${this.constructor.name}( ${this.tag} [${text}] )`
+                : `${this.constructor.name}( ${text} )`;
+        }
+        else
+            return b64;
     }
 
     /**
@@ -370,7 +370,7 @@ export class HoloHash extends Uint8Array {
      * @returns {string} The string representation.
      */
     toJSON () {
-	return this.toString();
+        return this.toString();
     }
 
     /**
@@ -380,14 +380,14 @@ export class HoloHash extends Uint8Array {
      * @throws Will throw an error if type does not match one of the known subclasses.
      */
     toType ( type ) {
-	if ( typeof type !== "string" ) // Assume 'type' is one of the HoloHash classes
-	    type			= type.name;
+        if ( typeof type !== "string" ) // Assume 'type' is one of the HoloHash classes
+            type                        = type.name;
 
-	if ( HoloHashTypes[type] === undefined )
-	    throw new Error(`Invalid HoloHash type (${type}); must be one of: ${Object.keys(HoloHashTypes)}`);
+        if ( HoloHashTypes[type] === undefined )
+            throw new Error(`Invalid HoloHash type (${type}); must be one of: ${Object.keys(HoloHashTypes)}`);
 
-	debug && log("Retype (%s) to (%s)", this.constructor.name, type );
-	return new HoloHashTypes[type](this.bytes(3));
+        debug && log("Retype (%s) to (%s)", this.constructor.name, type );
+        return new HoloHashTypes[type](this.bytes(3));
     }
 
     /**
@@ -397,7 +397,7 @@ export class HoloHash extends Uint8Array {
      * @throws Will throw an error if type does not match one of the known subclasses.
      */
     retype ( type ) {
-	return this.toType( type );
+        return this.toType( type );
     }
 
     /**
@@ -405,7 +405,7 @@ export class HoloHash extends Uint8Array {
      * @returns {function} The constructor of this instance.
      */
     hashType () {
-	return this.constructor;
+        return this.constructor;
     }
 }
 set_tostringtag( HoloHash, "HoloHash" );
@@ -413,53 +413,53 @@ set_tostringtag( HoloHash, "HoloHash" );
 
 
 export class AnyLinkableHash extends HoloHash {
-    static PREFIX			= ENUM_PREFIX;
+    static PREFIX                       = ENUM_PREFIX;
 
     constructor ( input: HoloHashInput, strict?: boolean ) {
-	super( input, strict );
+        super( input, strict );
 
-	// If the original constructor is this class, we will return the specific type instead of this
-	if ( this.constructor.name === AnyLinkableHash.name ) {
-	    if ( in_heritage( input, HoloHash.name ) )
-		input			= (input as HoloHash).bytes();
-	    let given_prefix		= input.slice(0,3);
+        // If the original constructor is this class, we will return the specific type instead of this
+        if ( this.constructor.name === AnyLinkableHash.name ) {
+            if ( in_heritage( input, HoloHash.name ) )
+                input                   = (input as HoloHash).bytes();
+            let given_prefix            = input.slice(0,3);
 
-	    for (let type of Object.values( AnyLinkableHashTypes )) {
-		if ( String(type.PREFIX) === String(given_prefix) )
-		    return new type( input.slice(3), strict );
-	    };
+            for (let type of Object.values( AnyLinkableHashTypes )) {
+                if ( String(type.PREFIX) === String(given_prefix) )
+                    return new type( input.slice(3), strict );
+            };
 
-	    const valid_types		= Object.values( AnyLinkableHashTypes )
-		  .map( type => `${type.name} (${type.PREFIX})` )
-		  .join(', ');
-	    throw new BadPrefixError(`Hash prefix did not match any AnyLinkableHash types: ${given_prefix}; valid types are ${valid_types}`);
-	}
+            const valid_types           = Object.values( AnyLinkableHashTypes )
+                  .map( type => `${type.name} (${type.PREFIX})` )
+                  .join(', ');
+            throw new BadPrefixError(`Hash prefix did not match any AnyLinkableHash types: ${given_prefix}; valid types are ${valid_types}`);
+        }
     }
 }
 set_tostringtag( AnyLinkableHash, "AnyLinkableHash" );
 
 export class AnyDhtHash extends AnyLinkableHash {
-    static PREFIX			= ENUM_PREFIX;
+    static PREFIX                       = ENUM_PREFIX;
 
     constructor ( input: HoloHashInput, strict?: boolean ) {
-	super( input, strict );
+        super( input, strict );
 
-	// If the original constructor is this class, we will return the specific type instead of this
-	if ( this.constructor.name === AnyDhtHash.name ) {
-	    if ( in_heritage( input, HoloHash.name ) )
-		input			= (input as HoloHash).bytes();
-	    let given_prefix		= input.slice(0,3);
+        // If the original constructor is this class, we will return the specific type instead of this
+        if ( this.constructor.name === AnyDhtHash.name ) {
+            if ( in_heritage( input, HoloHash.name ) )
+                input                   = (input as HoloHash).bytes();
+            let given_prefix            = input.slice(0,3);
 
-	    for (let type of Object.values( AnyDhtHashTypes )) {
-		if ( String(type.PREFIX) === String(given_prefix) )
-		    return new type( input.slice(3), strict );
-	    };
+            for (let type of Object.values( AnyDhtHashTypes )) {
+                if ( String(type.PREFIX) === String(given_prefix) )
+                    return new type( input.slice(3), strict );
+            };
 
-	    const valid_types		= Object.values( AnyDhtHashTypes )
-		  .map( type => `${type.name} (${type.PREFIX})` )
-		  .join(', ');
-	    throw new BadPrefixError(`Hash prefix did not match any AnyDhtHash types: ${given_prefix}; valid types are ${valid_types}`);
-	}
+            const valid_types           = Object.values( AnyDhtHashTypes )
+                  .map( type => `${type.name} (${type.PREFIX})` )
+                  .join(', ');
+            throw new BadPrefixError(`Hash prefix did not match any AnyDhtHash types: ${given_prefix}; valid types are ${valid_types}`);
+        }
     }
 }
 set_tostringtag( AnyDhtHash, "AnyDhtHash" );
@@ -467,47 +467,47 @@ set_tostringtag( AnyDhtHash, "AnyDhtHash" );
 
 
 export class ExternalHash extends AnyLinkableHash {
-    static PREFIX			= EXTERNAL_PREFIX;
+    static PREFIX                       = EXTERNAL_PREFIX;
 }
 set_tostringtag( ExternalHash, "ExternalHash" );
 
 export class AgentPubKey extends AnyDhtHash {
-    static PREFIX			= AGENT_PREFIX;
+    static PREFIX                       = AGENT_PREFIX;
 }
 set_tostringtag( AgentPubKey, "AgentPubKey" );
 
 export class EntryHash extends AnyDhtHash {
-    static PREFIX			= ENTRY_PREFIX;
+    static PREFIX                       = ENTRY_PREFIX;
 }
 set_tostringtag( EntryHash, "EntryHash" );
 
 export class NetIdHash extends HoloHash {
-    static PREFIX			= NETID_PREFIX;
+    static PREFIX                       = NETID_PREFIX;
 }
 set_tostringtag( NetIdHash, "NetIdHash" );
 
 export class DhtOpHash extends HoloHash {
-    static PREFIX			= DHTOP_PREFIX;
+    static PREFIX                       = DHTOP_PREFIX;
 }
 set_tostringtag( DhtOpHash, "DhtOpHash" );
 
 export class ActionHash extends AnyDhtHash {
-    static PREFIX			= ACTION_PREFIX;
+    static PREFIX                       = ACTION_PREFIX;
 }
 set_tostringtag( ActionHash, "ActionHash" );
 
 export class WasmHash extends HoloHash {
-    static PREFIX			= WASM_PREFIX;
+    static PREFIX                       = WASM_PREFIX;
 }
 set_tostringtag( WasmHash, "WasmHash" );
 
 export class DnaHash extends HoloHash {
-    static PREFIX			= DNA_PREFIX;
+    static PREFIX                       = DNA_PREFIX;
 }
 set_tostringtag( DnaHash, "DnaHash" );
 
 
-export const HoloHashTypes		= {
+export const HoloHashTypes              = {
     AgentPubKey,
     EntryHash,
     NetIdHash,
@@ -518,20 +518,20 @@ export const HoloHashTypes		= {
     ExternalHash,
 };
 
-export const AnyLinkableHashTypes	= {
+export const AnyLinkableHashTypes       = {
     AgentPubKey,
     EntryHash,
     ActionHash,
     ExternalHash,
 };
 
-export const AnyDhtHashTypes		= {
+export const AnyDhtHashTypes            = {
     AgentPubKey,
     EntryHash,
     ActionHash,
 };
 
-export const base64			= {
+export const base64                     = {
     "encode": bytes_to_b64,
     "decode": b64_to_bytes,
     "url_encode": b64_url_encode,
@@ -540,19 +540,19 @@ export const base64			= {
 
 export function bindNative() {
     if ( String.prototype.hasOwnProperty( "toHoloHash" ) )
-	throw new Error(`String.toHoloHash is already defined as type: ${typeof (String as any).toHoloHash}`);
+        throw new Error(`String.toHoloHash is already defined as type: ${typeof (String as any).toHoloHash}`);
 
     Object.defineProperty(String.prototype, "toHoloHash", {
-	"value": function ( strict ) {
-	    return new HoloHash(String(this), strict);
-	},
-	"enumerable": false,
-	"writable": false,
+        "value": function ( strict ) {
+            return new HoloHash(String(this), strict);
+        },
+        "enumerable": false,
+        "writable": false,
     });
 }
 
 export function logging () {
-    debug				= true;
+    debug                               = true;
 }
 
 export {
