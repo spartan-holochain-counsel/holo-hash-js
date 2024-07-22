@@ -60,7 +60,7 @@ clean-files-all-force:	clean-remove-chaff
 #
 # NPM packaging
 #
-prepare-package:
+prepare-package:	lib/index.js
 	rm -f dist/*
 	npx webpack
 	MODE=production npx webpack

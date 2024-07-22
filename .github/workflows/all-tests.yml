@@ -15,7 +15,7 @@ jobs:
 
     strategy:
       matrix:
-        node: [ 16, 18, 20 ]
+        node: [ 16, 18, 20, 22 ]
 
     name: Using Node.js v${{ matrix.node }}
     steps:
@@ -35,10 +35,11 @@ jobs:
 
       - name: Run Tests
         run: |
-          output=$(make test-debug | tee >(cat >&2))
-          passing=$(echo "$output" | grep -oP '\d+ passing' | grep -oP '\d+' || echo 0)
-          failing=$(echo "$output" | grep -oP '\d+ failing' | grep -oP '\d+' || echo 0)
-          pending=$(echo "$output" | grep -oP '\d+ pending' | grep -oP '\d+' || echo 0)
+          output=$(DEBUG_LEVEL=trace make test | tee >(cat >&2));
+          if [ ${PIPESTATUS[0]} -ne 0 ]; then exit ${PIPESTATUS[0]}; fi
+          passing=$(echo "$output" | grep -oP '\d+ passing' | grep -oP '\d+' | awk '{sum+=$1} END {print sum}')
+          failing=$(echo "$output" | grep -oP '\d+ failing' | grep -oP '\d+' | awk '{sum+=$1} END {print sum}')
+          pending=$(echo "$output" | grep -oP '\d+ pending' | grep -oP '\d+' | awk '{sum+=$1} END {print sum}')
           echo "## Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Node.js            | Passed   | Failed   | Pending  |" >> $GITHUB_STEP_SUMMARY
