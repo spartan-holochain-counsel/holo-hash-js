@@ -17,13 +17,13 @@ jobs:
       matrix:
         node: [ 16, 18, 20, 22 ]
 
-    name: Using Node.js v${{ matrix.node }}
+    name: Node.js v${{ matrix.node }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
 
@@ -42,7 +42,7 @@ jobs:
           pending=$(echo "$output" | grep -oP '\d+ pending' | grep -oP '\d+' | awk '{sum+=$1} END {print sum}')
           echo "## Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Node.js            | Passed   | Failed   | Pending  |" >> $GITHUB_STEP_SUMMARY
-          echo "|--------------------|----------|----------|----------|" >> $GITHUB_STEP_SUMMARY
-          echo "| ${{ matrix.node }} | $passing | $failing | $pending |" >> $GITHUB_STEP_SUMMARY
+          echo "| Node.js           | Passed   | Failed   | Pending  |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------------------|----------|----------|----------|" >> $GITHUB_STEP_SUMMARY
+          echo "| $(node --version) | $passing | $failing | $pending |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
